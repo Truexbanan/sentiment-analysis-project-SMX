@@ -30,7 +30,7 @@ cursor.execute(query)
 results = cursor.fetchall()
 
 # File path
-json_file_path = 'content.json'
+json_file_path = 'data/content.json'
 
 # Initialize the index for new data
 start_index = 1
