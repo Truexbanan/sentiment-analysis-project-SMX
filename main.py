@@ -1,10 +1,11 @@
+import json
+import logging
+
 import spacy
 import numpy as np
 import pandas as pd
 import matplotlib
 import seaborn as sns
-import json
-import logging
 
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
