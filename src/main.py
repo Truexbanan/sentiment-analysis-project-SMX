@@ -1,42 +1,19 @@
-import json
 import logging
-
-import spacy
-import numpy as np
-import pandas as pd
-import matplotlib
-import seaborn as sns
+from utils import load_json
+from normalization import preprocess_data
 
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
-def load_spacy_model(model_name):
-    try:
-        return spacy.load(model_name)
-    except IOError as e:
-        logging.error(f"Error loading spaCy model: {e}")
-        return None
-    
-def load_json(file_path):
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception as e:
-        logging.error(f"Error loading JSON file: {e}")
-        return None
-
 def main():
-    # load spaCy model
-    nlp = load_spacy_model("en_core_web_lg")
-    if not nlp: return
-
-    # load JSON data
+    # Load JSON data
     file_path = "../data/content.json"
     data = load_json(file_path)
-    if not data: return  # exit if data is None
+    if not data: return  # Exit if data is None
 
-    # retrieve first content
-    content = data["index"][0][1]
-    print(content)
+    # Preprocess data
+    processed_data = preprocess_data(data["index"])
+    for item in processed_data[:3]:
+        print(f"Index: {item[0]} || Processed Text: {item[1]}\n")
 
 if __name__ == '__main__':
     main()
