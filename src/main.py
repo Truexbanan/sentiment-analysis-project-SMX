@@ -30,7 +30,7 @@ def main():
     if not nlp: return
 
     # load JSON data
-    file_path = "data/content.json"
+    file_path = "../data/content.json"
     data = load_json(file_path)
     if not data: return  # exit if data is None
 
