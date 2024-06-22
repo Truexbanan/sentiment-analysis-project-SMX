@@ -12,7 +12,9 @@ def main():
 
     # Preprocess data
     processed_data = preprocess_data(data["index"])
-    for item in processed_data[:3]:
+
+    # For testing:
+    for item in processed_data[:3]: # Take the first 3
         print(f"Index: {item[0]} || Processed Text: {item[1]}\n")
 
 if __name__ == '__main__':
