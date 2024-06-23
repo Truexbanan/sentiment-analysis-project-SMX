@@ -4,3 +4,4 @@ __pycache__/
 
 # Ignore data files
 data/content.json
+data/.env
