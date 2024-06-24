@@ -21,7 +21,6 @@ def translate_text(text):
     try:
         translation = translator.translate(text, dest='en').text
     except Exception as e:
-        # logging.error(f"Error translating text: {e}")
         translation = text # If translation fails, fall back to original text
     return translation
 
