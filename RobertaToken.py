@@ -9,7 +9,7 @@ from transformers import AutoTokenizer
 #text_series is a pandas series of text data
 
 def tokenize_data(text_series):
-    MODEL = "cardiffnlp/twitter-roberta-base-sentiment"
+    MODEL = "cardiffnlp/twitter-roberta-base-sentiment-latest"
     tokenizer = AutoTokenizer.from_pretrained(MODEL)
     
     #func to use the tokenizer loaded above for the max length allowed
@@ -21,7 +21,6 @@ def tokenize_data(text_series):
 
     #input into torch - this Input_ids will be used for input into robberta model 
     input_ids = torch.tensor(tokenized_texts.tolist())
-
 
     # Create attention masks
 
