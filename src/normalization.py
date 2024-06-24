@@ -29,7 +29,7 @@ def preprocess_text(text):
     translated_text = translate_text(text)
     doc = nlp(translated_text)
     # Create list of lemmatized tokens, excluding stop words and punctuation
-    tokens = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct]
+    tokens = [token.lemma_ for token in doc if (not token.is_stop or token.dep_ == 'neg') and not token.is_punct]
     # Join list of tokens back into a single string
     return " ".join(tokens)
 
