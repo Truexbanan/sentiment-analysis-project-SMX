@@ -17,13 +17,17 @@ def load_spacy_model(model_name):
 # Load the spaCy model once
 nlp = load_spacy_model("en_core_web_sm")
     
+def translate_text(text):
+    try:
+        translation = translator.translate(text, dest='en').text
+    except Exception as e:
+        # logging.error(f"Error translating text: {e}")
+        translation = text # If translation fails, fall back to original text
+    return translation
+
 def preprocess_text(text):
     text = text.lower()  # Convert text to lowercase for uniformity
-    try:
-        translated_text = translator.translate(text, dest='en').text
-    except Exception as e:
-        logging.error(f"Error translating text: {e}")
-        translated_text = text # If translation fails, fall back to original text
+    translated_text = translate_text(text)
     doc = nlp(translated_text)
     # Create list of lemmatized tokens, excluding stop words and punctuation
     tokens = [token.lemma_ for token in doc if not token.is_stop and not token.is_punct]

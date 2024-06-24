@@ -14,7 +14,7 @@ def main():
     processed_data = preprocess_data(data["index"])
 
     # For testing:
-    for item in processed_data: # Take the first 3
+    for item in processed_data:
         print(f"Index: {item[0]} || Processed Text: {item[1]}\n")
 
 if __name__ == '__main__':
