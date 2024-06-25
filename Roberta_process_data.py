@@ -35,7 +35,7 @@ def process_and_analyze_data(json_file_path):
     input_ids, attention_masks = tokenize_data(df['text'])
 
     # Load the model
-    MODEL = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+    MODEL = "cardiffnlp/twitter-roberta-base-sentiment"
     model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 
     # Perform model inference

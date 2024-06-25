@@ -26,7 +26,7 @@ print("Attention Masks:")
 print(attention_masks)
 
 
-MODEL = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+MODEL = "cardiffnlp/twitter-roberta-base-sentiment"
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 
 

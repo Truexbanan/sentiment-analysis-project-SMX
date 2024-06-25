@@ -9,7 +9,7 @@ from transformers import AutoTokenizer
 #text_series is a pandas series of text data
 
 def tokenize_data(text_series):
-    MODEL = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+    MODEL = "cardiffnlp/twitter-roberta-base-sentiment"
     tokenizer = AutoTokenizer.from_pretrained(MODEL)
     
     #func to use the tokenizer loaded above for the max length allowed
