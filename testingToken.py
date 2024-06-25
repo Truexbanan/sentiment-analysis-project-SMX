@@ -46,6 +46,6 @@ predictions = torch.argmax(outputs.logits, dim=1)
 labels = ["Negative", "Neutral", "Positive"]
 results = [labels[pred] for pred in predictions]
 
-# Display the results
+# print the result
 for text, result in zip(df['text'], results):
     print(f"Text: {text}\nSentiment: {result}\n")
