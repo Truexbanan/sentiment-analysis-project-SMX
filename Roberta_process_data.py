@@ -1,4 +1,3 @@
-import logging
 import pandas as pd
 import torch
 from transformers import AutoModelForSequenceClassification
@@ -8,7 +7,8 @@ from RobertaToken import tokenize_data
 import os
 import json
 
-logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+#This is func to be called in main.py that takes in a json file path 
+# returns a  a list of dictionaries containing the index, processed text, and sentiment 
 
 def process_and_analyze_data(json_file_path):
     # Load JSON data
@@ -20,16 +20,8 @@ def process_and_analyze_data(json_file_path):
     # Preprocess data
     processed_data = preprocess_data(data["index"])
 
-    # Debug: Print the structure and a few entries of processed_data
-    print(f"Processed data length: {len(processed_data)}")
-    print(f"Sample processed data: {processed_data[:5]}")
-
-    # Convert to DataFrame for easier processing
-    try:
-        df = pd.DataFrame(processed_data, columns=['id', 'text'])
-    except Exception as e:
-        print(f"Error creating DataFrame: {e}")
-        return
+    # Convert to DataFrame
+    df = pd.DataFrame(processed_data, columns=['id', 'text'])
 
     # Tokenize and create attention masks
     input_ids, attention_masks = tokenize_data(df['text'])
@@ -38,7 +30,6 @@ def process_and_analyze_data(json_file_path):
     MODEL = "cardiffnlp/twitter-roberta-base-sentiment"
     model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 
-    # Perform model inference
     with torch.no_grad():
         outputs = model(input_ids, attention_mask=attention_masks)
 
