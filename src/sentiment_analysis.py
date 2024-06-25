@@ -1,6 +1,12 @@
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 def sentiment_analyzer(text):
+    """
+    Analyze the sentiment of the text using VADER.
+
+    @param text: The text to analyze.
+    @ret: The corresponding sentiment ('Positive', 'Negative', 'Neutral')
+    """
     # Initialize the VADER sentiment analyzer
     analyzer = SentimentIntensityAnalyzer()
 
