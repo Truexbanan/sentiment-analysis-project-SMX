@@ -6,6 +6,12 @@ from sentiment_analysis import sentiment_analyzer
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def main():
+    """
+    Main function to load data, preprocess it, and analyze its sentiment.
+
+    @param: None.
+    @ret: None.
+    """
     # Load JSON data
     file_path = "../data/content.json"
     data = load_json(file_path)

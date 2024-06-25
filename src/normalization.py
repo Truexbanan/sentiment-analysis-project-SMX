@@ -2,12 +2,18 @@ import spacy
 from spacy.tokens import Span
 import re # Regex library
 import pandas as pd
-from googletrans import Translator
+from googletrans import Translator # Google Translate API
 import logging
 
 translator = Translator()
 
 def load_spacy_model(model_name):
+    """
+    Load a spaCy model.
+    
+    @param model_name: The name of the spaCy model to load.
+    @ret: The loaded spaCy model.
+    """
     try:
         return spacy.load(model_name)
     except IOError as e:
@@ -18,6 +24,12 @@ def load_spacy_model(model_name):
 nlp = load_spacy_model("en_core_web_sm")
     
 def translate_text(text):
+    """
+    Translate text to English using Google Translate.
+    
+    @param text: The text to translate.
+    @ret: The translated text.
+    """
     try:
         translation = translator.translate(text, dest='en').text
     except Exception as e:
@@ -25,7 +37,13 @@ def translate_text(text):
     return translation
 
 def preprocess_text(text):
-    text = text.lower()  # Convert text to lowercase for uniformity
+    """
+    Preprocess the text by converting to lowercase, translating, and lemmatizing non-stop words and non-punctuation.
+    
+    @param text: The text to preprocess.
+    @ret: The preprocessed text.
+    """
+    text = text.lower()
     translated_text = translate_text(text)
     doc = nlp(translated_text)
     # Create list of lemmatized tokens, excluding stop words and punctuation
@@ -34,6 +52,12 @@ def preprocess_text(text):
     return " ".join(tokens)
 
 def preprocess_data(data):
+    """
+    Preprocess a list of data items.
+    
+    @param data: A list of [index, text] pairs.
+    @ret: A list of unique [index, preprocessed_text] pairs.
+    """
     processed_data = []
     # Ensure there are no duplicate posts
     unique_processed_texts = set()
