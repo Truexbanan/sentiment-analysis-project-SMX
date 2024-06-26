@@ -6,6 +6,8 @@ from googletrans import Translator # Google Translate API
 import logging
 
 translator = Translator()
+# Keep track of the current translations
+translation_cache = {}
 
 def load_spacy_model(model_name):
     """
@@ -30,11 +32,17 @@ def translate_text(text):
     @param text: The text to translate.
     @ret: The translated text.
     """
-    # translation = text
+    # If text has been translated already, retrieve it instead
+    if text in translation_cache:
+        return translation_cache[text]
+    
     try:
         translation = translator.translate(text, dest='en').text
     except Exception as e:
         translation = text # If translation fails, fall back to original text
+    
+    # Store translation in transation_cache
+    translation_cache[text] = translation
     return translation
 
 def preprocess_text(text):

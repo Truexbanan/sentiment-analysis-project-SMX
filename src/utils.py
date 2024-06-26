@@ -38,9 +38,8 @@ def save_to_json(new_data, file_path):
             start_index = last_entry[0] + 1
 
         # Adjust new data indices to continue from the highest index
-        for item in new_data["index"]:
-            item[0] = start_index
-            start_index += 1
+        for idx, item in enumerate(new_data["index"], start=start_index):
+            item[0] = idx
 
         # Append new data to existing data
         existing_data["index"].extend(new_data["index"])
