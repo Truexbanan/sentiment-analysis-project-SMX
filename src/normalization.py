@@ -30,6 +30,7 @@ def translate_text(text):
     @param text: The text to translate.
     @ret: The translated text.
     """
+    # translation = text
     try:
         translation = translator.translate(text, dest='en').text
     except Exception as e:
@@ -43,8 +44,7 @@ def preprocess_text(text):
     @param text: The text to preprocess.
     @ret: The preprocessed text.
     """
-    text = text.lower()
-    translated_text = translate_text(text)
+    translated_text = translate_text(text).lower()
     doc = nlp(translated_text)
     # Create list of lemmatized tokens, excluding stop words and punctuation
     tokens = [token.lemma_ for token in doc if (not token.is_stop or token.dep_ == 'neg') and not token.is_punct]
@@ -61,9 +61,13 @@ def preprocess_data(data):
     processed_data = []
     # Ensure there are no duplicate posts
     unique_processed_texts = set()
+    # List for duplicates
+    duplicates = []
     for index, text in data:
         processed_text = preprocess_text(text)
         if processed_text not in unique_processed_texts:
             unique_processed_texts.add(processed_text)
             processed_data.append([index, processed_text])
-    return processed_data
+        else:
+            duplicates.append([index, text])
+    return processed_data, duplicates
