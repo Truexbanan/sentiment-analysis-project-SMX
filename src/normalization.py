@@ -2,12 +2,12 @@ import spacy
 from spacy.tokens import Span
 import re # Regex library
 import pandas as pd
-from googletrans import Translator # Google Translate API
+# from googletrans import Translator # Google Translate API
 import logging
 
-translator = Translator()
-# Keep track of the current translations
-translation_cache = {}
+# translator = Translator()
+# # Keep track of the current translations
+# translation_cache = {}
 
 def load_spacy_model(model_name):
     """
@@ -23,7 +23,7 @@ def load_spacy_model(model_name):
         return None
 
 # Load the spaCy model once
-nlp = load_spacy_model("en_core_web_sm")
+nlp = load_spacy_model("en_core_web_lg")
     
 def translate_text(text):
     """
@@ -32,18 +32,19 @@ def translate_text(text):
     @param text: The text to translate.
     @ret: The translated text.
     """
-    # If text has been translated already, retrieve it instead
-    if text in translation_cache:
-        return translation_cache[text]
+    # # If text has been translated already, retrieve it instead
+    # if text in translation_cache:
+    #     return translation_cache[text]
     
-    try:
-        translation = translator.translate(text, dest='en').text
-    except Exception as e:
-        translation = text # If translation fails, fall back to original text
+    # try:
+    #     translation = translator.translate(text, dest='en').text
+    # except Exception as e:
+    #     translation = text # If translation fails, fall back to original text
     
-    # Store translation in transation_cache
-    translation_cache[text] = translation
-    return translation
+    # # Store translation in transation_cache
+    # translation_cache[text] = translation
+    # return translation
+    return text
 
 def preprocess_text(text):
     """

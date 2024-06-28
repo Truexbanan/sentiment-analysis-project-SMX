@@ -1,7 +1,9 @@
 import logging
 from utils import load_json, save_to_json
 from normalization import preprocess_data
-from sentiment_analysis import sentiment_results_and_counter
+from sentiment_analysis import sentiment_count
+from data_visualization import visualize_sentiment, print_sentiment_analysis
+from sentiment_analysis import sentiment_analyzer
 
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -21,18 +23,21 @@ def main():
     # Preprocess data and retrieve duplicates
     processed_data, duplicates = preprocess_data(data["index"])
 
-    # Analyze and count sentiments
-    sentiment_counts, results = sentiment_results_and_counter(processed_data)
+    # Analyze sentiment of preprocessed data
+    results = [[item[0], item[1], sentiment_analyzer(item[1])] for item in processed_data]
+
+    # Count sentiments
+    sentiment_counts = sentiment_count(results)
 
     # Save the results and duplicates to separate JSON files
-    save_to_json(results, "../data/processed_content.json")
-    save_to_json({"index": duplicates}, "../data/duplicates.json") # check if correct !!!!!!!!!!!!!!!!!!!
-
+    save_to_json({"index": processed_data}, "../data/processed_content.json")
+    save_to_json({"index": duplicates}, "../data/duplicates.json")
+    
     # Print the sentiment counts
-    print("Sentiment Counts:")
-    print(f"Positive: {sentiment_counts['positive']}")
-    print(f"Negative: {sentiment_counts['negative']}")
-    print(f"Neutral: {sentiment_counts['neutral']}")
+    print_sentiment_analysis(sentiment_counts)
+
+    # Visualize sentiments in a pie chart
+    visualize_sentiment(results)
 
 if __name__ == '__main__':
     main()

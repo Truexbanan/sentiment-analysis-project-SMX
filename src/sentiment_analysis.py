@@ -1,3 +1,4 @@
+import pandas as pd
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 def sentiment_analyzer(text):
@@ -18,27 +19,15 @@ def sentiment_analyzer(text):
     else:
         return "Neutral"
 
-def sentiment_results_and_counter(processed_data):
+def sentiment_count(data):
     """
-    Count the number of positive, negative, and neutral sentiments in the processed data
-    and store the results in a dictionary.
+    Count the number of each sentiment type in the data.
 
-    @param processed_data: A list of [index, preprocessed_text] pairs.
-    @ret: A dictionary with counts of each sentiment type and the processed results.
+    @param data: A list of [index, text, sentiment] pairs.
+    @ret: A dictionary with counts of each sentiment type.
     """
-    sentiment_counts = {"positive": 0, "negative": 0, "neutral": 0}
-    results = {"index": []}
+    df = pd.DataFrame(data, columns=['Index', 'Text', 'Sentiment'])
     
-    for item in processed_data:
-        sentiment = sentiment_analyzer(item[1])
-        results["index"].append([item[0], item[1], sentiment])
-        
-        # Update sentiment counters
-        if sentiment == "Positive":
-            sentiment_counts["positive"] += 1
-        elif sentiment == "Negative":
-            sentiment_counts["negative"] += 1
-        else:
-            sentiment_counts["neutral"] += 1
-            
-    return sentiment_counts, results
+    # Count the number of each sentiment
+    sentiment_counts = df['Sentiment'].value_counts().to_dict()
+    return sentiment_counts
