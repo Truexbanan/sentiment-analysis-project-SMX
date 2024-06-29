@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
-import seaborn as sns
 from tabulate import tabulate
 
 def print_sentiment_analysis(sentiment_counts):

@@ -19,7 +19,7 @@ def sentiment_analyzer(text):
     else:
         return "Neutral"
 
-def sentiment_count(data):
+def count_sentiments(data):
     """
     Count the number of each sentiment type in the data.
 

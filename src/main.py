@@ -1,9 +1,8 @@
 import logging
 from utils import load_json, save_to_json
 from normalization import preprocess_data
-from sentiment_analysis import sentiment_count
+from sentiment_analysis import count_sentiments, sentiment_analyzer
 from data_visualization import visualize_sentiment, print_sentiment_analysis
-from sentiment_analysis import sentiment_analyzer
 
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -27,7 +26,7 @@ def main():
     results = [[item[0], item[1], sentiment_analyzer(item[1])] for item in processed_data]
 
     # Count sentiments
-    sentiment_counts = sentiment_count(results)
+    sentiment_counts = count_sentiments(results)
 
     # Save the results and duplicates to separate JSON files
     save_to_json({"index": processed_data}, "../data/processed_content.json")

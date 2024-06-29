@@ -1,3 +1,4 @@
+import boto3
 import spacy
 from spacy.tokens import Span
 import re # Regex library
@@ -72,6 +73,8 @@ def preprocess_data(data):
     unique_processed_texts = set()
     # List for duplicates
     duplicates = []
+
+    # Loop over list of lists
     for index, text in data:
         processed_text = preprocess_text(text)
         if processed_text not in unique_processed_texts:
