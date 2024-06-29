@@ -1,7 +1,7 @@
 import pandas as pd
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-def sentiment_analyzer(text):
+def VADER_sentiment_analyzer(text):
     """
     Analyze the sentiment of the text using VADER.
 

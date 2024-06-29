@@ -1,7 +1,7 @@
 import logging
 from utils import load_json, save_to_json
 from normalization import preprocess_data
-from sentiment_analysis import count_sentiments, sentiment_analyzer
+from sentiment_analysis import count_sentiments, VADER_sentiment_analyzer
 from data_visualization import visualize_sentiment, print_sentiment_analysis
 
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -23,7 +23,7 @@ def main():
     processed_data, duplicates = preprocess_data(data["index"])
 
     # Analyze sentiment of preprocessed data
-    results = [[item[0], item[1], sentiment_analyzer(item[1])] for item in processed_data]
+    results = [[item[0], item[1], VADER_sentiment_analyzer(item[1])] for item in processed_data]
 
     # Count sentiments
     sentiment_counts = count_sentiments(results)

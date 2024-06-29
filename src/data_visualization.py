@@ -39,6 +39,18 @@ def visualize_sentiment(data):
 
     # Plotting the sentiment distribution as a pie chart
     plt.figure(figsize=(8, 8))
-    plt.pie(sentiment_counts, labels=sentiment_counts.index, autopct='%1.1f%%', startangle=140, colors=['#66b3ff','#99ff99','#ffcc99'])
-    plt.title('Distribution of Sentiment Scores')
+    wedges, _, percentage_texts = plt.pie(
+        sentiment_counts,
+        labels=[''] * len(sentiment_counts),
+        autopct='%1.1f%%',
+        startangle=140,
+        colors=['#00CC44','#F6AE28','#ED4545'],
+        textprops={'fontsize': 14, 'fontweight': 'bold'}
+    )
+    # Set the font size for the percentage values
+    for percentage in percentage_texts:
+        percentage.set_fontsize(16)
+
+    plt.title('Distribution of Sentiment Scores', fontsize=20, fontweight='bold')
+    plt.legend(wedges, sentiment_counts.index, title="Sentiment Categories", fontsize=12, title_fontsize='13')
     plt.show()
