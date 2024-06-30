@@ -29,7 +29,7 @@ def main():
     sentiment_counts = count_sentiments(results)
 
     # Save the results and duplicates to separate JSON files
-    save_to_json({"index": processed_data}, "../data/processed_content.json")
+    save_to_json({"index": results}, "../data/processed_content.json")
     save_to_json({"index": duplicates}, "../data/duplicates.json")
     
     # Print the sentiment counts

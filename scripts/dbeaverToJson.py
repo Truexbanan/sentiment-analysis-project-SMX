@@ -16,7 +16,6 @@ db_params = {
 'port': os.getenv('PORT') 
 }
 
-
 # Establishing the connection to the database
 conn = psycopg2.connect(**db_params)
 cursor = conn.cursor()
