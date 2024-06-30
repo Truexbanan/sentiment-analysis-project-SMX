@@ -4,7 +4,7 @@ from normalization import preprocess_data
 from sentiment_analysis import count_sentiments, VADER_sentiment_analyzer
 from data_visualization import visualize_sentiment, print_sentiment_analysis
 
-logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.ERROR, format='[%(asctime)s] [%(levelname)s] %(message)s')
 
 def main():
     """
