@@ -59,7 +59,7 @@ def preprocess_text(text):
     # Remove hashtags
     text = re.sub(r'#\w+', '', text)
     # Remove URLs
-    text = re.sub(r'http\S+|www\S+|\S+\.com', '', text, flags=re.IGNORECASE)
+    text = re.sub(r'http\S+|www\S+|\S+\.\S+', '', text, flags=re.IGNORECASE)
 
     translated_text = translate_text(text)
     doc = nlp(translated_text)
