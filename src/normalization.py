@@ -1,7 +1,6 @@
 import boto3
 import spacy
 from spacy.tokens import Span
-from spacy.pipeline import EntityRuler
 import re # Regex library
 import pandas as pd
 # from googletrans import Translator # Google Translate API
@@ -57,6 +56,11 @@ def preprocess_text(text):
     """
     # Remove user tags or mentions
     text = re.sub(r'@\w+', '', text)
+    # Remove hashtags
+    text = re.sub(r'#\w+', '', text)
+    # Remove URLs
+    text = re.sub(r'http\S+|www\S+|\S+\.com', '', text, flags=re.IGNORECASE)
+
     translated_text = translate_text(text)
     doc = nlp(translated_text)
     # Create list of lemmatized tokens, excluding stop words and punctuation
