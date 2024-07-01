@@ -1,6 +1,7 @@
 import boto3
 import spacy
 from spacy.tokens import Span
+from spacy.pipeline import EntityRuler
 import re # Regex library
 import pandas as pd
 # from googletrans import Translator # Google Translate API
@@ -49,12 +50,14 @@ def translate_text(text):
 
 def preprocess_text(text):
     """
-    Preprocess the text by converting to lowercase, translating, and lemmatizing non-stop words and non-punctuation.
+    Preprocess the text by translating it and lemmatizing non-stop words and non-punctuation.
     
     @param text: The text to preprocess.
     @ret: The preprocessed text.
     """
-    translated_text = translate_text(text).lower()
+    # Remove user tags or mentions
+    text = re.sub(r'@\w+', '', text)
+    translated_text = translate_text(text)
     doc = nlp(translated_text)
     # Create list of lemmatized tokens, excluding stop words and punctuation
     tokens = [token.lemma_ for token in doc if (not token.is_stop or token.dep_ == 'neg') and not token.is_punct]
@@ -82,4 +85,5 @@ def preprocess_data(data):
             processed_data.append([index, processed_text])
         else:
             duplicates.append([index, text])
+
     return processed_data, duplicates
