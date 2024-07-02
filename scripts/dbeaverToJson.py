@@ -3,10 +3,11 @@ from psycopg2 import sql
 import json
 import os
 from dotenv import load_dotenv
+
 # loading variables from .env file
 load_dotenv() 
 
-
+# Database connection parameters
 db_params = {
 'dbname': os.getenv('DBNAME'),
 'user': os.getenv('USER'),
@@ -15,8 +16,7 @@ db_params = {
 'port': os.getenv('PORT') 
 }
 
-
-# Establishing the connection
+# Establishing the connection to the database
 conn = psycopg2.connect(**db_params)
 cursor = conn.cursor()
 
@@ -29,7 +29,7 @@ cursor.execute(query)
 # Fetching the results
 results = cursor.fetchall()
 
-# File path
+# Path to the JSON file where data will be stored
 json_file_path = 'data/content.json'
 
 # Initialize the index for new data

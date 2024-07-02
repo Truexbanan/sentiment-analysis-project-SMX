@@ -1,11 +1,14 @@
+import boto3
 import spacy
 from spacy.tokens import Span
 import re # Regex library
 import pandas as pd
-from googletrans import Translator # Google Translate API
+# from googletrans import Translator # Google Translate API
 import logging
 
-translator = Translator()
+# translator = Translator()
+# # Keep track of the current translations
+# translation_cache = {}
 
 def load_spacy_model(model_name):
     """
@@ -21,7 +24,7 @@ def load_spacy_model(model_name):
         return None
 
 # Load the spaCy model once
-nlp = load_spacy_model("en_core_web_sm")
+nlp = load_spacy_model("en_core_web_lg")
     
 def translate_text(text):
     """
@@ -30,20 +33,34 @@ def translate_text(text):
     @param text: The text to translate.
     @ret: The translated text.
     """
-    try:
-        translation = translator.translate(text, dest='en').text
-    except Exception as e:
-        translation = text # If translation fails, fall back to original text
-    return translation
+    # # If text has been translated already, retrieve it instead
+    # if text in translation_cache:
+    #     return translation_cache[text]
+    
+    # try:
+    #     translation = translator.translate(text, dest='en').text
+    # except Exception as e:
+    #     translation = text # If translation fails, fall back to original text
+    
+    # # Store translation in transation_cache
+    # translation_cache[text] = translation
+    # return translation
+    return text
 
 def preprocess_text(text):
     """
-    Preprocess the text by converting to lowercase, translating, and lemmatizing non-stop words and non-punctuation.
+    Preprocess the text by translating it and lemmatizing non-stop words and non-punctuation.
     
     @param text: The text to preprocess.
     @ret: The preprocessed text.
     """
-    text = text.lower()
+    # Remove user tags or mentions
+    text = re.sub(r'@\w+', '', text)
+    # Remove hashtags
+    text = re.sub(r'#\w+', '', text)
+    # Remove URLs
+    text = re.sub(r'http\S+|www\S+|\S+\.\S+', '', text, flags=re.IGNORECASE)
+
     translated_text = translate_text(text)
     doc = nlp(translated_text)
     # Create list of lemmatized tokens, excluding stop words and punctuation
@@ -61,9 +78,16 @@ def preprocess_data(data):
     processed_data = []
     # Ensure there are no duplicate posts
     unique_processed_texts = set()
+    # List for duplicates
+    duplicates = []
+
+    # Loop over list of lists
     for index, text in data:
         processed_text = preprocess_text(text)
         if processed_text not in unique_processed_texts:
             unique_processed_texts.add(processed_text)
             processed_data.append([index, processed_text])
-    return processed_data
+        else:
+            duplicates.append([index, text])
+
+    return processed_data, duplicates

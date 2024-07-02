@@ -4,4 +4,9 @@ __pycache__/
 
 # Ignore data files
 data/content.json
+data/processed_content.json
+data/duplicates.json
 data/.env
+
+# Ignore macOS .DS_Store files
+.DS_Store

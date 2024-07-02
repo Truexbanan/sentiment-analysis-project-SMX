@@ -1,6 +1,7 @@
+import pandas as pd
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-def sentiment_analyzer(text):
+def VADER_sentiment_analyzer(text):
     """
     Analyze the sentiment of the text using VADER.
 
@@ -17,3 +18,16 @@ def sentiment_analyzer(text):
         return "Negative"
     else:
         return "Neutral"
+
+def count_sentiments(data):
+    """
+    Count the number of each sentiment type in the data.
+
+    @param data: A list of [index, text, sentiment] pairs.
+    @ret: A dictionary with counts of each sentiment type.
+    """
+    df = pd.DataFrame(data, columns=['Index', 'Text', 'Sentiment'])
+    
+    # Count the number of each sentiment
+    sentiment_counts = df['Sentiment'].value_counts().to_dict()
+    return sentiment_counts
