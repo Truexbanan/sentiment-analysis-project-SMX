@@ -28,7 +28,7 @@ nlp = load_spacy_model("en_core_web_lg")
     
 def translate_text(text):
     """
-    Translate text to English using Google Translate.
+    Translate text to English using Amazon Translate.
     
     @param text: The text to translate.
     @ret: The translated text.
@@ -49,7 +49,8 @@ def translate_text(text):
 
 def preprocess_text(text):
     """
-    Preprocess the text by translating it and lemmatizing non-stop words and non-punctuation.
+    Preprocess the text by removing mentions, hashtags, URLs, and extra spaces,
+    translating the text, and lemmatizing non-stop words and non-punctuation tokens.
     
     @param text: The text to preprocess.
     @ret: The preprocessed text.
@@ -60,6 +61,9 @@ def preprocess_text(text):
     text = re.sub(r'#\w+', '', text)
     # Remove URLs
     text = re.sub(r'http\S+|www\S+|\S+\.\S+', '', text, flags=re.IGNORECASE)
+
+    # Remove extra spaces
+    text = ' '.join(text.split())
 
     translated_text = translate_text(text)
     doc = nlp(translated_text)
