@@ -23,20 +23,20 @@ def main():
     processed_data, duplicates = preprocess_data(data["index"])
 
     # Analyze sentiment of preprocessed data
-    results = [[item[0], item[1], VADER_sentiment_label(VADER_sentiment_analyzer(item[1]))] for item in processed_data]
+    vader_results = [[item[0], item[1], VADER_sentiment_label(VADER_sentiment_analyzer(item[1]))] for item in processed_data]
 
     # Count sentiments
-    sentiment_counts = count_sentiments(results)
+    sentiment_counts = count_sentiments(vader_results)
 
     # Save the results and duplicates to separate JSON files
-    save_to_json({"index": results}, "../data/processed_content.json")
-    save_to_json({"index": duplicates}, "../data/duplicates.json")
+    save_to_json({"index": vader_results}, "../data/vader_processed_content.json")
+    save_to_json({"index": duplicates}, "../data/duplicate_content.json")
     
     # Print the sentiment counts
     print_sentiment_analysis(sentiment_counts)
 
     # Visualize sentiments in a pie chart
-    visualize_sentiment(results)
+    visualize_sentiment(vader_results)
 
 if __name__ == '__main__':
     main()
