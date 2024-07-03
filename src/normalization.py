@@ -6,10 +6,6 @@ import pandas as pd
 # from googletrans import Translator # Google Translate API
 import logging
 
-# translator = Translator()
-# # Keep track of the current translations
-# translation_cache = {}
-
 def load_spacy_model(model_name):
     """
     Load a spaCy model.
@@ -25,7 +21,10 @@ def load_spacy_model(model_name):
 
 # Load the spaCy model once
 nlp = load_spacy_model("en_core_web_lg")
-    
+
+# Initialize the Amazon Translate client
+translate_client = boto3.client('translate', region_name='us-east-1')
+
 def translate_text(text):
     """
     Translate text to English using Amazon Translate.
@@ -33,19 +32,15 @@ def translate_text(text):
     @param text: The text to translate.
     @ret: The translated text.
     """
-    # # If text has been translated already, retrieve it instead
-    # if text in translation_cache:
-    #     return translation_cache[text]
-    
-    # try:
-    #     translation = translator.translate(text, dest='en').text
-    # except Exception as e:
-    #     translation = text # If translation fails, fall back to original text
-    
-    # # Store translation in transation_cache
-    # translation_cache[text] = translation
-    # return translation
-    return text
+    try:
+        response = translate_client.translate_text(
+            Text=text,
+            SourceLanguageCode='auto',
+            TargetLanguageCode='en'
+        )
+        return response['TranslatedText']
+    except Exception as e:
+        return text  # If translation fails, use original text
 
 def preprocess_text(text):
     """

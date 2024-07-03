@@ -73,8 +73,12 @@ def count_sentiments(data):
     @param data: A list of [index, text, sentiment] pairs.
     @ret: A dictionary with counts of each sentiment type.
     """
-    df = pd.DataFrame(data, columns=['Index', 'Text', 'Sentiment'])
-    
-    # Count the number of each sentiment
-    sentiment_counts = df['Sentiment'].value_counts().to_dict()
+    sentiment_counts = {}
+
+    for _, _, sentiment in data:
+        if sentiment in sentiment_counts:
+            sentiment_counts[sentiment] += 1
+        else:
+            sentiment_counts[sentiment] = 1
+
     return sentiment_counts
