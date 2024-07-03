@@ -7,19 +7,30 @@ from RobertaToken import tokenize_data
 import os
 import json
 
+
+class DataFrameCreationError(Exception):
+    pass
+
+def create_dataframe(processed_data):
+    try:
+        df = pd.DataFrame(processed_data, columns=['id', 'text'])
+        return df
+    except Exception as e:
+        print(f"Error creating DataFrame: {e}")
+        raise DataFrameCreationError(f"Failed to create DataFrame: {e}")
+
+
+
 #This is func to be called in main.py that takes in a json file path 
 # returns a  a list of dictionaries containing the index, processed text, and sentiment 
 
 def analyze_data(processed_data):
-
-
-       # Convert to DataFrame for easier processing
+    # Convert to DataFrame for easier processing
     try:
-        df = pd.DataFrame(processed_data, columns=['id', 'text'])
-    except Exception as e:
-        print(f"Error creating DataFrame: {e}")
+        df = create_dataframe(processed_data)
+    except DataFrameCreationError as e:
+        print(e)
         return
-
 
     # Tokenize and create attention masks
     input_ids, attention_masks = tokenize_data(df['text'])
