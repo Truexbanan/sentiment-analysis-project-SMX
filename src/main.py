@@ -25,14 +25,14 @@ def main():
 
     # Analyze sentiment of preprocessed data using VADER
     vader_results = [[item[0], item[1], vader_sentiment_label(vader_sentiment_analyzer(item[1]))] for item in processed_data]
-    # roberta_results = analyze_data(processed_data)
+    roberta_results = analyze_data(processed_data)
 
     # Count sentiments
     sentiment_counts = count_sentiments(vader_results)
 
     # Save the results and duplicates to separate JSON files
     save_to_json({"index": vader_results}, "../data/vader_processed_content.json")
-    # save_to_json({"index": roberta_results}, "../data/roberta_processed_content.json")
+    save_to_json({"index": roberta_results}, "../data/roberta_processed_content.json")
     save_to_json({"index": duplicates}, "../data/duplicate_content.json")
     
     # Print the sentiment counts

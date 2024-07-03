@@ -25,6 +25,9 @@ nlp = load_spacy_model("en_core_web_lg")
 # Initialize the Amazon Translate client
 translate_client = boto3.client('translate', region_name='us-east-1')
 
+# Initialize translation cache
+translation_cache = {}
+
 def translate_text(text):
     """
     Translate text to English using Amazon Translate.
@@ -32,13 +35,20 @@ def translate_text(text):
     @param text: The text to translate.
     @ret: The translated text.
     """
+    # Check if the text is already in the cache
+    if text in translation_cache:
+        return translation_cache[text]
+    
     try:
         response = translate_client.translate_text(
             Text=text,
             SourceLanguageCode='auto',
             TargetLanguageCode='en'
         )
-        return response['TranslatedText']
+        # Store the translated text in the cache
+        translation = response['TranslatedText']
+        translation_cache[text] = translation
+        return translation
     except Exception as e:
         return text  # If translation fails, use original text
 
