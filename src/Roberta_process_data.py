@@ -1,27 +1,36 @@
 import pandas as pd
 import torch
 from transformers import AutoModelForSequenceClassification
-from src.utils import load_json
-from src.normalization import preprocess_data
+from utils import load_json
+from normalization import preprocess_data
 from RobertaToken import tokenize_data
 import os
 import json
 
+
+class DataFrameCreationError(Exception):
+    pass
+
+def create_dataframe(processed_data):
+    try:
+        df = pd.DataFrame(processed_data, columns=['id', 'text'])
+        return df
+    except Exception as e:
+        print(f"Error creating DataFrame: {e}")
+        raise DataFrameCreationError(f"Failed to create DataFrame: {e}")
+
+
+
 #This is func to be called in main.py that takes in a json file path 
 # returns a  a list of dictionaries containing the index, processed text, and sentiment 
 
-def process_and_analyze_data(json_file_path):
-    # Load JSON data
-    with open(json_file_path, 'r') as file:
-        data = json.load(file)
-    if not data:
-        return  # Exit if data is None
-
-    # Preprocess data
-    processed_data = preprocess_data(data["index"])
-
-    # Convert to DataFrame
-    df = pd.DataFrame(processed_data, columns=['id', 'text'])
+def analyze_data(processed_data):
+    # Convert to DataFrame for easier processing
+    try:
+        df = create_dataframe(processed_data)
+    except DataFrameCreationError as e:
+        print(e)
+        return
 
     # Tokenize and create attention masks
     input_ids, attention_masks = tokenize_data(df['text'])
