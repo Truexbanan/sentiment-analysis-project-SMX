@@ -34,14 +34,14 @@ def main():
     
 
     # Save the results and duplicates to separate JSON files
-    save_to_json({"index": results}, "../data/processed_content.json")
-    save_to_json({"index": duplicates}, "../data/duplicates.json")
+    save_to_json({"index": vader_results}, "../data/vader_processed_content.json")
+    save_to_json({"index": duplicates}, "../data/duplicate_content.json")
     
     # Print the sentiment counts
     print_sentiment_analysis(sentiment_counts)
 
     # Visualize sentiments in a pie chart
-    visualize_sentiment(results)
+    visualize_sentiment(vader_results)
 
 if __name__ == '__main__':
     main()
