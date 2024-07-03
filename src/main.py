@@ -1,7 +1,7 @@
 import logging
 from utils import load_json, save_to_json
 from normalization import preprocess_data
-from sentiment_analysis import count_sentiments, VADER_sentiment_analyzer, VADER_sentiment_label
+from sentiment_analysis import count_sentiments, vader_sentiment_analyzer, vader_sentiment_label
 from data_visualization import visualize_sentiment, print_sentiment_analysis
 from Roberta_process_data import analyze_data
 
@@ -23,18 +23,16 @@ def main():
     # Preprocess data and retrieve duplicates
     processed_data, duplicates = preprocess_data(data["index"])
 
-    RobertaRestults = analyze_data(processed_data)
-    save_to_json({"index": RobertaRestults}, "../data/Roberta_content.json")
-
     # Analyze sentiment of preprocessed data using VADER
-    results = [[item[0], item[1], VADER_sentiment_label(VADER_sentiment_analyzer(item[1]))] for item in processed_data]
+    vader_results = [[item[0], item[1], vader_sentiment_label(vader_sentiment_analyzer(item[1]))] for item in processed_data]
+    roberta_results = analyze_data(processed_data)
 
     # Count sentiments
-    sentiment_counts = count_sentiments(results)
-    
+    sentiment_counts = count_sentiments(vader_results)
 
     # Save the results and duplicates to separate JSON files
     save_to_json({"index": vader_results}, "../data/vader_processed_content.json")
+    save_to_json({"index": roberta_results}, "../data/roberta_processed_content.json")
     save_to_json({"index": duplicates}, "../data/duplicate_content.json")
     
     # Print the sentiment counts

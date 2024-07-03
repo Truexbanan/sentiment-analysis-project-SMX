@@ -1,7 +1,7 @@
 import pandas as pd
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-def VADER_sentiment_analyzer(text):
+def vader_sentiment_analyzer(text):
     """
     Analyze the sentiment of the text using VADER and apply custom rules.
 
@@ -52,7 +52,7 @@ def VADER_sentiment_analyzer(text):
     
     return sentiment
 
-def VADER_sentiment_label(sentiment):
+def vader_sentiment_label(sentiment):
     """
     Label the sentiment based on the sentiment scores.
 
