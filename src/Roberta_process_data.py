@@ -20,8 +20,12 @@ def create_dataframe(processed_data):
         raise DataFrameCreationError(f"Failed to create DataFrame: {e}")
 
 
+#TODO Comments for this function currently are somewhat notes so I remember how it works
+#TODO CLEAN up comments    
+
 
 # This entire block is for Adjusting the thresholds for determining sentiment in order to reduce amount of neutral results
+    
     
 # logits - This parameter expects the raw output from the model
 # neutral_threshold=0.6: This parameter sets a default threshold for determining whether a sentiment should be classified as neutral. 
