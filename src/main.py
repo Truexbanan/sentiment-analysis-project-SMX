@@ -1,5 +1,13 @@
 import logging
-from utils import load_json, save_to_json
+from database_utils import (
+    connect_to_database,
+    create_table,
+    fetch_data_from_database,
+    insert_vader_data_to_database,
+    insert_roberta_data_to_database,
+    close_connection_to_database
+)
+from utils import load_json, save_to_json # Will be replaced with database operations
 from normalization import preprocess_data
 from sentiment_analysis import count_sentiments, vader_sentiment_analyzer, vader_sentiment_label
 from data_visualization import visualize_sentiment, print_sentiment_analysis
@@ -23,12 +31,12 @@ def main():
     # Preprocess data and retrieve duplicates
     processed_data, duplicates = preprocess_data(data["index"])
 
-    # Analyze sentiment of preprocessed data using VADER
+    # Analyze sentiment of preprocessed data
     vader_results = [[item[0], item[1], vader_sentiment_label(vader_sentiment_analyzer(item[1]))] for item in processed_data]
     roberta_results = analyze_data(processed_data)
 
     # Count sentiments
-    sentiment_counts = count_sentiments(vader_results)
+    vader_sentiment_counts = count_sentiments(vader_results)
 
     # Save the results and duplicates to separate JSON files
     save_to_json({"index": vader_results}, "../data/vader_processed_content.json")
@@ -36,7 +44,7 @@ def main():
     save_to_json({"index": duplicates}, "../data/duplicate_content.json")
     
     # Print the sentiment counts
-    print_sentiment_analysis(sentiment_counts)
+    print_sentiment_analysis(vader_sentiment_counts)
 
     # Visualize sentiments in a pie chart
     visualize_sentiment(vader_results)
