@@ -35,7 +35,8 @@ def create_table(cursor):
     CREATE TABLE IF NOT EXISTS uk_prime_minister_sentiment (
         content_id SERIAL PRIMARY KEY,
         content TEXT,
-        sentiment VARCHAR(10)
+        vader_sentiment VARCHAR(10),
+        roberta_sentiment VARCHAR(10)
     );
     """
     cursor.execute(create_table_query)
@@ -57,20 +58,43 @@ def fetch_data_from_database(cursor):
     formatted_data = [[start_index + idx, row[0]] for idx, row in enumerate(data)]
     return formatted_data
 
-def insert_data_to_database(cursor, data):
+def insert_data_to_database(cursor, data, sentiment_column):
     """
-    Insert sentiment analyses results into the database.
+    Insert sentiment analysis results into the database.
+
+    @param cursor: A cursor object to execute database commands.
+    @param data: A list of lists containing the sentiment analysis results.
+    @param sentiment_column: The name of the column to insert the sentiment data into.
+    @ret: None.
+    """
+    insert_query = f"""
+        INSERT INTO uk_prime_minister_sentiment (content_id, content, {sentiment_column})
+        VALUES (%s, %s, %s)
+        ON CONFLICT (content_id) DO UPDATE SET
+        {sentiment_column} = EXCLUDED.{sentiment_column};
+    """
+    formatted_data = [(item[0], item[1], item[2]) for item in data]
+    cursor.executemany(insert_query, formatted_data)
+
+def insert_vader_data_to_database(cursor, data):
+    """
+    Insert VADER sentiment analysis results into the database.
 
     @param cursor: A cursor object to execute database commands.
     @param data: A list of lists containing the sentiment analysis results.
     @ret: None.
     """
-    insert_query = """
-        INSERT INTO uk_prime_minister_sentiment (content_id, content, sentiment)
-        VALUES (%s, %s, %s);
+    insert_data_to_database(cursor, data, "vader_sentiment")
+
+def insert_roberta_data_to_database(cursor, data):
     """
-    formatted_data = [(item[0], item[1], item[2]) for item in data]
-    cursor.executemany(insert_query, formatted_data)
+    Insert roBERTa sentiment analysis results into the database.
+
+    @param cursor: A cursor object to execute database commands.
+    @param data: A list of lists containing the sentiment analysis results.
+    @ret: None.
+    """
+    insert_data_to_database(cursor, data, "roberta_sentiment")
 
 def close_connection_to_database(conn, cursor):
     """
