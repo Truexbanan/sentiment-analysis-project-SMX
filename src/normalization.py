@@ -87,8 +87,6 @@ def preprocess_data(data):
     processed_data = []
     # Ensure there are no duplicate posts
     unique_processed_texts = set()
-    # List for duplicates
-    duplicates = []
 
     # Loop over list of lists
     for index, text in data:
@@ -96,7 +94,5 @@ def preprocess_data(data):
         if processed_text not in unique_processed_texts:
             unique_processed_texts.add(processed_text)
             processed_data.append([index, processed_text])
-        else:
-            duplicates.append([index, text])
 
-    return processed_data, duplicates
+    return processed_data
