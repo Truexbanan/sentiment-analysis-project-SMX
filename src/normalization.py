@@ -1,9 +1,6 @@
 import boto3
 import spacy
-from spacy.tokens import Span
 import re # Regex library
-import pandas as pd
-# from googletrans import Translator # Google Translate API
 import logging
 
 def load_spacy_model(model_name):
@@ -66,6 +63,8 @@ def preprocess_text(text):
     text = re.sub(r'#\w+', '', text)
     # Remove URLs
     text = re.sub(r'http\S+|www\S+|\S+\.\S+', '', text, flags=re.IGNORECASE)
+    # Remove Emails
+    text = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '', text)
 
     # Remove extra spaces
     text = ' '.join(text.split())
