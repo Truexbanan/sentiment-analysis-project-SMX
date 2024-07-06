@@ -33,7 +33,7 @@ def main():
     if not data:
         return  # Exit if data is None
 
-    # Preprocess data and retrieve duplicates
+    # Preprocess data
     processed_data = preprocess_data(data)
 
     # Analyze sentiment of preprocessed data
@@ -41,14 +41,14 @@ def main():
     roberta_results = analyze_data(processed_data)
 
     # Count sentiments for VADER
-    sentiment_counts = count_sentiments(vader_results)
+    vader_sentiment_counts = count_sentiments(vader_results)
 
     # Insert the results into the database
     insert_vader_data_to_database(cursor, vader_results)
     insert_roberta_data_to_database(cursor, roberta_results)
 
     # Print the sentiment counts for VADER
-    print_sentiment_analysis(sentiment_counts)
+    print_sentiment_analysis(vader_sentiment_counts)
 
     # Visualize sentiments in a pie chart for VADER results
     visualize_sentiment(vader_results)

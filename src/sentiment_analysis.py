@@ -1,4 +1,3 @@
-import pandas as pd
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 def vader_sentiment_analyzer(text):
@@ -29,7 +28,8 @@ def vader_sentiment_analyzer(text):
         "fear": -0.6,
         "threaten": -0.7,
         "lead": 0,
-        "party": 0 # Usually reference political party
+        "party": 0, # Usually reference political party
+        "energy": 0
     }
     
     # Apply custom rules
