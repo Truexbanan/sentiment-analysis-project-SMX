@@ -94,7 +94,7 @@ The program is designed to be easily extendable. Other sentiment analysis tools 
 Below is an example of what the updated database would look like:
 
 | content_id | content                                                                                 |  vader_sentiment  | roberta_sentiment |
-|-----------:|----------------------------------------------------------------------------------------:|------------------:|------------------:|
+|------------|-----------------------------------------------------------------------------------------|-------------------|-------------------|
 | 1          | That wasn't a good movie. I found it quite boring, and there wasn't much action.        |      Negative     |      Negative     |
 | 2          | Sam went shopping with her mom. They saw their Uncle Joey picking up flowers.           |      Neutral      |      Neutral      |
 | 3          | The vibrant flowers and the cheerful songs of the birds create a delightful atmosphere. |      Positive     |      Positive     |
