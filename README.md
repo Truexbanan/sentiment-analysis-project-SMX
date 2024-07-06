@@ -85,16 +85,16 @@ After running the program, a connection to the PostgreSQL database will be estab
 
 The program is designed to be easily extendable. Other sentiment analysis tools can be added by following these steps:
 
-	1.	Implement the new sentiment analysis tool: Write a function to analyze sentiment using the new tool.
-	2.	Update the database schema to include a new column for the new tool’s results.
-	3.	Analyze data using the new tool and insert results into the database.
+   1.	Implement the new sentiment analysis tool: Write a function to analyze sentiment using the new tool.
+   2.	Update the database schema to include a new column for the new tool’s results.
+   3.	Analyze data using the new tool and insert results into the database.
 
 ### Example
 
 Below is an example of what the updated database would look like:
 
 | content_id | content                                                                                 |  vader_sentiment  | roberta_sentiment |
-|:----------:|:---------------------------------------------------------------------------------------:|:-----------------:|:-----------------:|
+|-----------:|----------------------------------------------------------------------------------------:|------------------:|------------------:|
 | 1          | That wasn't a good movie. I found it quite boring, and there wasn't much action.        |      Negative     |      Negative     |
 | 2          | Sam went shopping with her mom. They saw their Uncle Joey picking up flowers.           |      Neutral      |      Neutral      |
 | 3          | The vibrant flowers and the cheerful songs of the birds create a delightful atmosphere. |      Positive     |      Positive     |
