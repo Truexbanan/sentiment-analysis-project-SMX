@@ -1,8 +1,10 @@
 import logging
 from database_utils import (
     connect_to_database,
-    create_table,
-    fetch_data_from_database,
+    create_table_for_sentiment_analysis,
+    create_table_for_geospatial_analysis,
+    fetch_post_data_from_database,
+    fetch_location_data_from_database,
     insert_vader_data_to_database,
     insert_roberta_data_to_database,
     close_connection_to_database
@@ -25,11 +27,12 @@ def main():
     conn = connect_to_database()
     cursor = conn.cursor()
 
-    # Create the sentiment analysis results table if it doesn't exist
-    create_table(cursor)
+    # Create the sentiment and geospatial analysis results tables if they don't exist
+    create_table_for_sentiment_analysis(cursor)
+    create_table_for_geospatial_analysis(cursor)
 
     # Fetch data from the database
-    data = fetch_data_from_database(cursor)
+    data = fetch_post_data_from_database(cursor)
     if not data:
         return  # Exit if data is None
 

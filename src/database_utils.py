@@ -24,7 +24,7 @@ def connect_to_database():
     # Establishing the connection to the database
     return psycopg2.connect(**db_params)
 
-def create_table(cursor):
+def create_table_for_sentiment_analysis(cursor):
     """
     Create the sentiment analysis results table if it doesn't exist.
     
@@ -32,30 +32,59 @@ def create_table(cursor):
     @ret: None.
     """
     create_table_query = """
-    CREATE TABLE IF NOT EXISTS uk_prime_minister_sentiment (
-        content_id SERIAL PRIMARY KEY,
+    CREATE TABLE IF NOT EXISTS uk_prime_minister_sentiment_analysis (
+        postid INT PRIMARY KEY,
         content TEXT,
         vader_sentiment VARCHAR(10),
-        roberta_sentiment VARCHAR(10)
+        roberta_sentiment VARCHAR(10),
+        FOREIGN KEY (postid) REFERENCES uk_prime_minister(postid)
     );
     """
     cursor.execute(create_table_query)
 
-def fetch_data_from_database(cursor):
+def create_table_for_geospatial_analysis(cursor):
+    """
+    Create the geospatial analysis results table if it doesn't exist.
+    
+    @param cursor: A cursor object to execute database commands.
+    @ret: None.
+    """
+    create_table_query = """
+    CREATE TABLE IF NOT EXISTS uk_prime_minister_geospatial_analysis (
+        postid INT PRIMARY KEY,
+        longitude DECIMAL,
+        latitude DECIMAL,
+        location TEXT,
+        FOREIGN KEY (postid) REFERENCES uk_prime_minister(postid)
+    );
+    """
+    cursor.execute(create_table_query)
+
+def fetch_post_data_from_database(cursor):
     """
     Fetch data from the database.
 
     @param: A cursor object to execute database commands.
     @ret: A list of lists formatted as [[index, content], ...].
     """
-    cursor.execute("SELECT content FROM uk_prime_minister;")
+    cursor.execute("SELECT postid, content FROM uk_prime_minister;")
     data = cursor.fetchall() # Initially stored as a list of tuples
 
-    cursor.execute("SELECT MAX(content_id) FROM uk_prime_minister_sentiment;")
-    max_index_result = cursor.fetchone()
-    start_index = max_index_result[0] + 1 if max_index_result[0] is not None else 1
+    formatted_data = [[row[0], row[1]] for row in data]
+    return formatted_data
 
-    formatted_data = [[start_index + idx, row[0]] for idx, row in enumerate(data)]
+def fetch_location_data_from_database(cursor):
+    """
+    Fetch data relevant to geospatial analysis from the database.
+
+    @param: A cursor object to execute database commands.
+    @ret: A list of lists formatted as [[index, content], ...].
+    """
+    cursor.execute("SELECT postid, longitude, latitude FROM uk_prime_minister")
+    data = cursor.fetchall()
+
+    # Working with list of lists:
+    formatted_data = [[row[0], row[1]] for row in data]
     return formatted_data
 
 def insert_data_to_database(cursor, data, sentiment_column):
@@ -68,9 +97,9 @@ def insert_data_to_database(cursor, data, sentiment_column):
     @ret: None.
     """
     insert_query = f"""
-        INSERT INTO uk_prime_minister_sentiment (content_id, content, {sentiment_column})
+        INSERT INTO uk_prime_minister_sentiment_analysis (postid, content, {sentiment_column})
         VALUES (%s, %s, %s)
-        ON CONFLICT (content_id) DO UPDATE SET
+        ON CONFLICT (postid) DO UPDATE SET
         {sentiment_column} = EXCLUDED.{sentiment_column};
     """
     formatted_data = [(item[0], item[1], item[2]) for item in data]
