@@ -24,7 +24,7 @@ def connect_to_database():
     # Establishing the connection to the database
     return psycopg2.connect(**db_params)
 
-def create_table_for_sentiment_analysis(cursor):
+def create_sentiment_analysis_table(cursor):
     """
     Create the sentiment analysis results table if it doesn't exist.
     
@@ -42,7 +42,7 @@ def create_table_for_sentiment_analysis(cursor):
     """
     cursor.execute(create_table_query)
 
-def create_table_for_geospatial_analysis(cursor):
+def create_geospatial_analysis_table(cursor):
     """
     Create the geospatial analysis results table if it doesn't exist.
     
@@ -52,9 +52,9 @@ def create_table_for_geospatial_analysis(cursor):
     create_table_query = """
     CREATE TABLE IF NOT EXISTS uk_prime_minister_geospatial_analysis (
         postid INT PRIMARY KEY,
-        longitude DECIMAL,
-        latitude DECIMAL,
-        location TEXT,
+        longitude DECIMAL NOT NULL,
+        latitude DECIMAL NOT NULL,
+        location TEXT NOT NULL,
         FOREIGN KEY (postid) REFERENCES uk_prime_minister(postid)
     );
     """
@@ -73,21 +73,41 @@ def fetch_post_data_from_database(cursor):
     formatted_data = [[row[0], row[1]] for row in data]
     return formatted_data
 
-def fetch_location_data_from_database(cursor):
+def fetch_geospatial_data_from_database(cursor):
     """
     Fetch data relevant to geospatial analysis from the database.
 
     @param: A cursor object to execute database commands.
     @ret: A list of lists formatted as [[index, content], ...].
     """
-    cursor.execute("SELECT postid, longitude, latitude FROM uk_prime_minister")
-    data = cursor.fetchall()
+    fetch_query = """
+        SELECT postid, longitude, latitude, location
+        FROM uk_prime_minister
+        WHERE longitude IS NOT NULL AND latitude IS NOT NULL AND location IS NOT NULL;
+    """
+    cursor.execute(fetch_query)
+    data = cursor.fetchall()  # This will be a list of tuples
+    return [list(row) for row in data]  # Convert each tuple to a list
 
-    # Working with list of lists:
-    formatted_data = [[row[0], row[1]] for row in data]
-    return formatted_data
+def insert_geospatial_data_to_database(cursor, data):
+    """
+    Insert geospatial analysis results into the database.
 
-def insert_data_to_database(cursor, data, sentiment_column):
+    @param cursor: A cursor object to execute database commands.
+    @param data: A list of lists containing the geospatial data [postid, longitude, latitude, location].
+    @ret: None.
+    """
+    insert_query = """
+        INSERT INTO uk_prime_minister_geospatial_analysis (postid, longitude, latitude, location)
+        VALUES (%s, %s, %s, %s)
+        ON CONFLICT (postid) DO UPDATE SET
+        longitude = EXCLUDED.longitude,
+        latitude = EXCLUDED.latitude,
+        location = EXCLUDED.location;
+    """
+    cursor.executemany(insert_query, data)
+
+def insert_sentiment_data_to_database(cursor, data, sentiment_column):
     """
     Insert sentiment analysis results into the database.
 
@@ -113,7 +133,7 @@ def insert_vader_data_to_database(cursor, data):
     @param data: A list of lists containing the sentiment analysis results.
     @ret: None.
     """
-    insert_data_to_database(cursor, data, "vader_sentiment")
+    insert_sentiment_data_to_database(cursor, data, "vader_sentiment")
 
 def insert_roberta_data_to_database(cursor, data):
     """
@@ -123,7 +143,7 @@ def insert_roberta_data_to_database(cursor, data):
     @param data: A list of lists containing the sentiment analysis results.
     @ret: None.
     """
-    insert_data_to_database(cursor, data, "roberta_sentiment")
+    insert_sentiment_data_to_database(cursor, data, "roberta_sentiment")
 
 def close_connection_to_database(conn, cursor):
     """
