@@ -39,80 +39,65 @@ The goal of this project is to conduct sentiment analysis on social media posts 
    source .venv/bin/activate
    ```
 
-3. Install the required packages:
+   To exit the virtual environment:
+   
+   Windows/MacOS/Linux:
+   ```
+   deactivate
+   ```
+
+4. Install the required packages:
    ```
    pip install -r requirements.txt
    ```
 
 ## Running the Program
 
-1. Run the `dbeaverToJson.py` script located in the scripts directory to generate `content.json`, the data file to be analyzed.
-
-   Windows:
+1. From the project directory, change to the 'src' directory.
    ```
-   cd scripts
-   python dbeaverToJson.py
-   ```
-
-   MacOS/Linux:
-   ```
-   cd scripts
-   python3 dbeaverToJson.py
-   ```
-
-2. From the scripts directory, change to the src directory and run main.py.
-
-   Windows:
-   ```
-   cd ..
    cd src
+   ```
+
+2. Ensure that you have an `.env` file, containing the database parameters. If you do not permit access, you will be unable to run this program. This file needs to be located outside of the sentiment-analysis-project directory.
+
+3. Run the `main.py` file.
+
+   Windows:
+   ```
    python main.py
    ```
 
    MacOS/Linux:
    ```
-   cd ..
-   cd src
    python3 main.py
    ```
 
 ## Usage
 
-After running the program, `content.json` will be analyzed for sentiment. The following will occur:
+After running the program, a connection to the PostgreSQL database will be established, and the contents of the social media posts will be retrieved. The program will then preprocess the posts, analyze their sentiment, and update the database with the results.
 
 1. **Console Output**: A table will be printed in the console displaying the count for the respective sentiment categories (Positive, Negative, or Neutral) for each sentiment analysis tool.
-2. **Generated Files**: Three JSON files will be created in the `data` directory:
-   - `vader_processed_content.json`: Contains processed content analyzed by the VADER model.
-   - `roberta_processed_content.json`: Contains processed content analyzed by Hugging Face’s roBERTa model.
-   - `duplicate_content.json`: Stores any duplicate content identified during analysis.
+2. **Database Updates**: A new table will be created with the following columns:
+   - `content_id`: The index of the processed content.
+   - `content`: The processed content.
+   - `vader_sentiment`: The sentiment identified using VADER sentiment analysis.
+   - `roberta_sentiment`: The sentiment identified using roBERTa sentiment analysis.
+
+The program is designed to be easily extendable. Other sentiment analysis tools can be added by following these steps:
+
+   1.	Implement the new sentiment analysis tool: Write a function to analyze sentiment using the new tool.
+   2.	Update the database schema to include a new column for the new tool’s results.
+   3.	Analyze data using the new tool and insert results into the database.
 
 ### Example
-Below is an example of what the json files would look like.
 
- `content.json`:
-   ```json
-   {
-       "index": [
-           [
-               1,
-               "I really like this movie!"
-           ]
-       ]
-   }
-   ```
+Below is an example of what the updated database would look like:
 
-`vader_processed_content.json` and `roberta_processed_content.json`:
-   ```json
-   {
-       "index": [
-           [
-               1,
-               "I really like this movie!",
-               "Positive"
-           ]
-       ]
-   }
-   ```
+| content_id | content                                                                                 |  vader_sentiment  | roberta_sentiment |
+|------------|-----------------------------------------------------------------------------------------|-------------------|-------------------|
+| 1          | That wasn't a good movie. I found it quite boring, and there wasn't much action.        |      Negative     |      Negative     |
+| 2          | Sam went shopping with her mom. They saw their Uncle Joey picking up flowers.           |      Neutral      |      Neutral      |
+| 3          | The vibrant flowers and the cheerful songs of the birds create a delightful atmosphere. |      Positive     |      Positive     |
 
 ## Results
 
@@ -138,4 +123,4 @@ This project was led by Charles Wirks and served as Kelly Ton and Banan Truex's 
 
 ## License
 
-This project is owned by SMX.
+This project is owned by [SMX](https://www.smxtech.com/)

@@ -42,7 +42,7 @@ def visualize_sentiment(data):
     wedges, _, percentage_texts = plt.pie(
         sentiment_counts,
         labels=[''] * len(sentiment_counts),
-        autopct='%1.1f%%',
+        autopct='%1.2f%%',
         startangle=140,
         colors=['#00CC44','#F6AE28','#ED4545'],
         textprops={'fontsize': 14, 'fontweight': 'bold'}

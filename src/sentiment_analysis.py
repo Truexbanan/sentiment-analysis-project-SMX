@@ -1,4 +1,3 @@
-import pandas as pd
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 def vader_sentiment_analyzer(text):
@@ -29,7 +28,8 @@ def vader_sentiment_analyzer(text):
         "fear": -0.6,
         "threaten": -0.7,
         "lead": 0,
-        "party": 0 # Usually reference political party
+        "party": 0, # Usually reference political party
+        "energy": 0
     }
     
     # Apply custom rules
@@ -73,8 +73,12 @@ def count_sentiments(data):
     @param data: A list of [index, text, sentiment] pairs.
     @ret: A dictionary with counts of each sentiment type.
     """
-    df = pd.DataFrame(data, columns=['Index', 'Text', 'Sentiment'])
-    
-    # Count the number of each sentiment
-    sentiment_counts = df['Sentiment'].value_counts().to_dict()
+    sentiment_counts = {}
+
+    for _, _, sentiment in data:
+        if sentiment in sentiment_counts:
+            sentiment_counts[sentiment] += 1
+        else:
+            sentiment_counts[sentiment] = 1
+
     return sentiment_counts

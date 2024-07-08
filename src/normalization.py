@@ -1,14 +1,7 @@
 import boto3
 import spacy
-from spacy.tokens import Span
 import re # Regex library
-import pandas as pd
-# from googletrans import Translator # Google Translate API
 import logging
-
-# translator = Translator()
-# # Keep track of the current translations
-# translation_cache = {}
 
 def load_spacy_model(model_name):
     """
@@ -25,7 +18,13 @@ def load_spacy_model(model_name):
 
 # Load the spaCy model once
 nlp = load_spacy_model("en_core_web_lg")
-    
+
+# Initialize the Amazon Translate client
+translate_client = boto3.client('translate', region_name='us-east-1')
+
+# Initialize translation cache
+translation_cache = {}
+
 def translate_text(text):
     """
     Translate text to English using Amazon Translate.
@@ -33,19 +32,22 @@ def translate_text(text):
     @param text: The text to translate.
     @ret: The translated text.
     """
-    # # If text has been translated already, retrieve it instead
-    # if text in translation_cache:
-    #     return translation_cache[text]
+    # Check if the text is already in the cache
+    if text in translation_cache:
+        return translation_cache[text]
     
-    # try:
-    #     translation = translator.translate(text, dest='en').text
-    # except Exception as e:
-    #     translation = text # If translation fails, fall back to original text
-    
-    # # Store translation in transation_cache
-    # translation_cache[text] = translation
-    # return translation
-    return text
+    try:
+        response = translate_client.translate_text(
+            Text=text,
+            SourceLanguageCode='auto',
+            TargetLanguageCode='en'
+        )
+        # Store the translated text in the cache
+        translation = response['TranslatedText']
+        translation_cache[text] = translation
+        return translation
+    except Exception as e:
+        return text  # If translation fails, use original text
 
 def preprocess_text(text):
     """
@@ -61,6 +63,8 @@ def preprocess_text(text):
     text = re.sub(r'#\w+', '', text)
     # Remove URLs
     text = re.sub(r'http\S+|www\S+|\S+\.\S+', '', text, flags=re.IGNORECASE)
+    # Remove Emails
+    text = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '', text)
 
     # Remove extra spaces
     text = ' '.join(text.split())
@@ -82,8 +86,6 @@ def preprocess_data(data):
     processed_data = []
     # Ensure there are no duplicate posts
     unique_processed_texts = set()
-    # List for duplicates
-    duplicates = []
 
     # Loop over list of lists
     for index, text in data:
@@ -91,7 +93,5 @@ def preprocess_data(data):
         if processed_text not in unique_processed_texts:
             unique_processed_texts.add(processed_text)
             processed_data.append([index, processed_text])
-        else:
-            duplicates.append([index, text])
 
-    return processed_data, duplicates
+    return processed_data
