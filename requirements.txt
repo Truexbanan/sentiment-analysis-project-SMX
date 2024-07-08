@@ -1,6 +1,5 @@
 boto3==1.34.135 # Amazon Translate
 en-core-web-lg @ https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.7.1/en_core_web_lg-3.7.1-py3-none-any.whl#sha256=ab70aeb6172cde82508f7739f35ebc9918a3d07debeed637403c8f794ba3d3dc
-googletrans==4.0.0rc1 # Replacing
 matplotlib==3.9.0
 numpy==1.26.4
 pandas==2.2.2

@@ -3,11 +3,12 @@
 ## Table of Contents
 1. [Overview](#overview)
 2. [Installation](#installation)
-3. [Running the Program](#running-the-program)
-4. [Usage](#usage)
-5. [Results](#results)
-6. [Authors and Acknowledgment](#authors-and-acknowledgment)
-7. [License](#license)
+3. [AWS Configuration](#aws-configuration)
+4. [Running the Program](#running-the-program)
+5. [Usage](#usage)
+6. [Results](#results)
+7. [Authors and Acknowledgment](#authors-and-acknowledgment)
+8. [License](#license)
 
 ## Overview
 
@@ -50,6 +51,78 @@ The goal of this project is to conduct sentiment analysis on social media posts 
    ```
    pip install -r requirements.txt
    ```
+
+## AWS Configuration
+
+To use the AWS Translate service, you need to configure your AWS credentials. Follow these steps to set up your credentials:
+
+### Windows
+
+#### Using Environment Variables
+
+1. Open Environment Variables:
+   - Right-click on `This PC` or `Computer` on your desktop or in File Explorer.
+   - Click on `Properties`.
+   - Click on `Advanced system settings`.
+   - Click on the `Environment Variables` button.
+
+2. Add AWS Credentials:
+   - In the `System variables` section, click `New`.
+   - Add the following variables:
+     - `AWS_ACCESS_KEY_ID` with your access key.
+     - `AWS_SECRET_ACCESS_KEY` with your secret key.
+     - (Optional) `AWS_SESSION_TOKEN` if you're using temporary credentials.
+
+### macOS
+
+#### Using the AWS CLI
+
+1. Install the AWS CLI:
+   - If you haven't installed the AWS CLI yet, you can install it using Homebrew:
+     ```
+     brew install awscli
+     ```
+   - Alternatively, follow the instructions on the [AWS CLI installation page](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
+
+2. Configure the AWS CLI:
+   - Open your terminal.
+   - Run the following command to configure your AWS credentials:
+     ```
+     aws configure
+     ```
+   - Follow the prompts to enter your AWS access key, secret key, and default region:
+     ```
+     AWS Access Key ID [None]: your_access_key
+     AWS Secret Access Key [None]: your_secret_key
+     Default region name [None]: us-east-1
+     Default output format [None]: your_format
+     ```
+
+### Linux
+
+#### Using the AWS CLI
+
+1. Install the AWS CLI:
+   - If you haven't installed the AWS CLI yet, you can install it using your package manager. For example, on Ubuntu, you can use:
+     ```sh
+     sudo apt-get update
+     sudo apt-get install awscli
+     ```
+   - Alternatively, you can follow the instructions on the [AWS CLI installation page](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
+
+2. Configure the AWS CLI:
+   - Open your terminal.
+   - Run the following command to configure your AWS credentials:
+     ```sh
+     aws configure
+     ```
+   - Follow the prompts to enter your AWS access key, secret key, and default region:
+     ```sh
+     AWS Access Key ID [None]: your_access_key
+     AWS Secret Access Key [None]: your_secret_key
+     Default region name [None]: us-east-1
+     Default output format [None]: your_format
+     ```
 
 ## Running the Program
 

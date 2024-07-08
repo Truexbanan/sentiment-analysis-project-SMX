@@ -30,7 +30,9 @@ def vader_sentiment_analyzer(text):
         "lead": 0,
         "party": 0, # Usually reference political party
         "energy": 0,
-        "backlash": -0.3
+        "backlash": -0.3,
+        "challenge": 0,
+        "play": 0
     }
     
     # Apply custom rules
