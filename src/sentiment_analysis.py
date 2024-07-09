@@ -12,6 +12,9 @@ def vader_sentiment_analyzer(text):
 
     sentiment = analyzer.polarity_scores(text)
     
+    """"
+    
+    """
     # Custom rules for specific phrases:
     custom_rules = {
         "flee": -0.7,
@@ -32,7 +35,9 @@ def vader_sentiment_analyzer(text):
         "energy": 0,
         "backlash": -0.3,
         "challenge": 0,
-        "play": 0
+        "play": 0,
+        "like": 0.15,
+        "weird": -0.3
     }
     
     # Apply custom rules
