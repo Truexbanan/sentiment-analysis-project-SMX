@@ -1,19 +1,10 @@
 import logging
-from database_utils import (
-    connect_to_database,
-    create_sentiment_analysis_table,
-    create_geospatial_analysis_table,
-    fetch_post_data_from_database,
-    fetch_geospatial_data_from_database,
-    insert_geospatial_data_to_database,
-    insert_vader_data_to_database,
-    insert_roberta_data_to_database,
-    close_connection_to_database
-)
+from database_utils import *
 from normalization import preprocess_data
 from sentiment_analysis import count_sentiments, vader_sentiment_analyzer, vader_sentiment_label
 from data_visualization import visualize_sentiment, print_sentiment_analysis
 from Roberta_process_data import analyze_data
+from geospatial_analysis import geospatial_analyzer
 
 logging.basicConfig(level=logging.ERROR, format='[%(asctime)s] [%(levelname)s] %(message)s')
 
@@ -41,6 +32,7 @@ def main():
     # Preprocess data
     processed_data = preprocess_data(data)
 
+    """ SENTIMENT ANALYSIS """
     # Analyze sentiment of preprocessed data
     vader_results = [[item[0], item[1], vader_sentiment_label(vader_sentiment_analyzer(item[1]))] for item in processed_data]
     roberta_results = analyze_data(processed_data)
@@ -58,6 +50,10 @@ def main():
 
     # Visualize sentiments in a pie chart for VADER results
     visualize_sentiment(vader_results)
+
+    """ GEOSPATIAL ANALYSIS """
+    # Analyze geospatial data
+    geospatial_analyzer(geospatial_data)
 
     # Commit changes and close the connection to the database
     close_connection_to_database(conn, cursor)

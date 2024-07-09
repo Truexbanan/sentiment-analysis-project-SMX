@@ -11,10 +11,7 @@ def vader_sentiment_analyzer(text):
     analyzer = SentimentIntensityAnalyzer()
 
     sentiment = analyzer.polarity_scores(text)
-    
-    """"
-    
-    """
+
     # Custom rules for specific phrases:
     custom_rules = {
         "flee": -0.7,
