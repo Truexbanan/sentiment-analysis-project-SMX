@@ -4,13 +4,13 @@ from transformers import AutoModelForSequenceClassification
 from RobertaToken import tokenize_data
 
 # Define a constant for the neutral threshold
-NEUTRAL_THRESHOLD = 0.4
+# Amount of neutrals and NEUTRAL_THRESHOLD have an inverse relationship 
+NEUTRAL_THRESHOLD = 0.99
 
-
-# for creating Pandas DF with error exception
 class DataFrameCreationError(Exception):
     pass
 
+#creating a pandas DF
 def create_dataframe(processed_data):
     try:
         df = pd.DataFrame(processed_data, columns=['id', 'text'])
@@ -20,53 +20,46 @@ def create_dataframe(processed_data):
         raise DataFrameCreationError(f"Failed to create DataFrame: {e}")
 
 
-#TODO Comments for this function currently are somewhat notes so I remember how it works
-#TODO CLEAN up comments    
-
-
-# This entire block is for Adjusting the thresholds for determining sentiment in order to reduce amount of neutral results
-    
-    
 # logits - This parameter expects the raw output from the model
-# neutral_threshold=0.6: This parameter sets a default threshold for determining whether a sentiment should be classified as neutral. 
-# If the highest probability is below this threshold, the prediction is considered neutral.
     
-
-# the lower the neutral_threshold means less neutral results and higher means more neutral.
-    
-# essentialy the threshold is saying that when the model's confidence (probability) for all classes is low it just assigns neutral
-def adjust_thresholds(logits, neutral_threshold=0.6):
+def adjust_thresholds(logits, neutral_threshold=0.65):
 
     # softmax function is a mathematical function that converts a vector of raw scores (logits) into probabilities - https://en.wikipedia.org/wiki/Softmax_function
     # Convert logits to probabilities that sum to 1
-    # dim=1: Specifies to apply softmax along the columns (second dimension) of the tensor, which contain class scores for each example
-    # dim = 0 would apply softmax across rows which would not make sense as rows = batch size
-
+    # dim=1: Specifies to apply softmax along the columns (second dimension) of the tensor, which contain class scores
     # the tensor logits should be in the form of - (batch_size (rows) x num_classes (cols))
 
     probabilities = torch.nn.functional.softmax(logits, dim=1)
-
-    
     adjusted_predictions = []
 
-    # Iterates over each probability vector in the probabilities tensor. 
+    print(f"Adjusting threshold with {neutral_threshold} threshold value")
+
+
+   # Iterates over each probability vector in the probabilities tensor. 
     #Each pr is a vector containing the probabilities for each class (negative, neutral, positive).
+
     for prob in probabilities:
-        max_prob = torch.max(prob) # Find the highest probability in the current set of class probabilities
-        if max_prob < neutral_threshold: # If the highest probability is less than the neutral threshold
-            adjusted_predictions.append(1)  # Classify as neutral (1)
+        print(f"Probabilities: {prob.tolist()}")
+        if prob[1] > neutral_threshold:  # Check if the neutral class exceeds the threshold
+            print("Classified as Neutral")
+            adjusted_predictions.append(1)  # Classify as neutral
         else:
-            adjusted_predictions.append(torch.argmax(prob).item()) # Otherwise, classify as the index of the highest probability (negative or positive)
+            highest_prob_class = torch.argmax(prob).item()
+            if highest_prob_class == 1:  # If the highest probability is neutral, but it doesn't exceed the threshold, pick the next highest class
+                non_neutral_probs = [prob[0], prob[2]]
+                highest_non_neutral_class = torch.argmax(torch.tensor(non_neutral_probs)).item()
+                adjusted_predictions.append(highest_non_neutral_class if highest_non_neutral_class == 0 else 2)
+                print(f"Classified as {highest_non_neutral_class if highest_non_neutral_class == 0 else 2}")
+            else:
+                print(f"Classified as {highest_prob_class}")
+                adjusted_predictions.append(highest_prob_class)  # Otherwise, classify as the highest probability class (negative or positive)
+
     return adjusted_predictions
 
-
-
-# to be called in main.py - returns a  a list of dictionaries containing the index, processed text, and sentiment 
-
-def analyze_data(processed_data):
+def analyze_data(raw_data):
     # Convert to DataFrame for easier processing
     try:
-        df = create_dataframe(processed_data)
+        df = create_dataframe(raw_data)
     except DataFrameCreationError as e:
         print(e)
         return
@@ -74,23 +67,26 @@ def analyze_data(processed_data):
     # Tokenize and create attention masks
     input_ids, attention_masks = tokenize_data(df['text'])
 
+
     # Load the model
+
     MODEL = "cardiffnlp/twitter-roberta-base-sentiment"
     model = AutoModelForSequenceClassification.from_pretrained(MODEL)
 
 
     # removed gradiant calculation - to reduce memory consumption as its not needed unless we are using Tensor.backward()
+
     with torch.no_grad():
         outputs = model(input_ids, attention_mask=attention_masks)
 
+
+
     # Extract the predicted sentiments
     # Adjust the thresholds to classify sentiments
-    adjusted_predictions = adjust_thresholds(outputs.logits, neutral_threshold = NEUTRAL_THRESHOLD )
 
-    # Map predictions to sentiment labels
+    adjusted_predictions = adjust_thresholds(outputs.logits, neutral_threshold=NEUTRAL_THRESHOLD)
+
     labels = ["Negative", "Neutral", "Positive"]
-    results = [{"index": item[0], "text": item[1], "sentiment": labels[pred]} for item, pred in zip(processed_data, adjusted_predictions)]
+    results = [{"index": item[0], "text": item[1], "sentiment": labels[pred]} for item, pred in zip(raw_data, adjusted_predictions)]
 
     return results
-
-
