@@ -14,26 +14,26 @@ def vader_sentiment_analyzer(text):
 
     # Custom rules for specific phrases:
     custom_rules = {
-        "flee": -0.7,
-        "thank": 0.3,
-        "bravery": 0.3,
-        "courage": 0.3,
-        "heroism": 0.2,
-        "victory": 0.2,
-        "support": 0.2,
-        "inspiration": 0.2,
-        "unity": 0.2,
         "achievement": 0.2,
-        "struggle": -0.4,
-        "fear": -0.6,
-        "threaten": -0.7,
-        "lead": 0,
-        "party": 0, # Usually reference political party
-        "energy": 0,
         "backlash": -0.3,
+        "bravery": 0.3,
         "challenge": 0,
-        "play": 0,
+        "courage": 0.3,
+        "energy": 0,
+        "fear": -0.6,
+        "flee": -0.7,
+        "heroism": 0.2,
+        "inspiration": 0.2,
+        "lead": 0,
         "like": 0.15,
+        "party": 0, # Usually reference political party
+        "play": 0,
+        "struggle": -0.4,
+        "support": 0.2,
+        "thank": 0.3,
+        "threaten": -0.7,
+        "unity": 0.2,
+        "victory": 0.2,
         "weird": -0.3
     }
     
