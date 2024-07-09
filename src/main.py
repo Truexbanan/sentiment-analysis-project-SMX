@@ -1,8 +1,11 @@
 import logging
 from database_utils import (
     connect_to_database,
-    create_table,
-    fetch_data_from_database,
+    create_sentiment_analysis_table,
+    create_geospatial_analysis_table,
+    fetch_post_data_from_database,
+    fetch_geospatial_data_from_database,
+    insert_geospatial_data_to_database,
     insert_vader_data_to_database,
     insert_roberta_data_to_database,
     close_connection_to_database
@@ -25,11 +28,13 @@ def main():
     conn = connect_to_database()
     cursor = conn.cursor()
 
-    # Create the sentiment analysis results table if it doesn't exist
-    create_table(cursor)
+    # Create the sentiment and geospatial analysis tables if they don't exist
+    create_sentiment_analysis_table(cursor)
+    create_geospatial_analysis_table(cursor)
 
     # Fetch data from the database
-    data = fetch_data_from_database(cursor)
+    data = fetch_post_data_from_database(cursor)
+    geospatial_data = fetch_geospatial_data_from_database(cursor)
     if not data:
         return  # Exit if data is None
 
@@ -46,6 +51,7 @@ def main():
     # Insert the results into the database
     insert_vader_data_to_database(cursor, vader_results)
     insert_roberta_data_to_database(cursor, roberta_results)
+    insert_geospatial_data_to_database(cursor, geospatial_data)
 
     # Print the sentiment counts for VADER
     print_sentiment_analysis(vader_sentiment_counts)
