@@ -1,9 +1,9 @@
 import pandas as pd
 import torch
 from transformers import AutoModelForSequenceClassification
-from utils import load_json
-from normalization import preprocess_data
-from RobertaToken import tokenize_data
+from utils.json.json_utils import load_json
+from src.normalization import preprocess_data
+from src.roberta_token import tokenize_data
 import os
 import json
 
