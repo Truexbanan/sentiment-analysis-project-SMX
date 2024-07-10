@@ -1,7 +1,7 @@
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import pandas as pd
-from RobertaToken import tokenize_data
+from src.roberta_token import tokenize_data
 
 
 data = {

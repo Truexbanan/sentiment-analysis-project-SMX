@@ -16,26 +16,38 @@ def vader_sentiment_analyzer(text):
     custom_rules = {
         "achievement": 0.2,
         "backlash": -0.3,
+        "bankruptcy": -0.6,
         "bravery": 0.3,
         "challenge": 0,
         "courage": 0.3,
+        "cut sanitation services": -0.5,
+        "darkest hour": 0,
+        "dim lights": -0.4,
         "energy": 0,
         "fear": -0.6,
         "flee": -0.7,
+        "forced": -0.5,
         "heroism": 0.2,
         "inspiration": 0.2,
         "lead": 0,
-        "like": 0.15,
-        "party": 0, # Usually reference political party
+        "livelihood": 0,
+        "party": 0,  # Usually reference political party
         "play": 0,
         "struggle": -0.4,
         "support": 0.2,
         "thank": 0.3,
         "threaten": -0.7,
         "unity": 0.2,
-        "victory": 0.2,
-        "weird": -0.3
+        "united kingdom": 0,
+        "united states": 0,
+        "united nations": 0,
+        "victory": 0.2
     }
+    
+    positive_words = ["love", "loved", "great", "excellent", "fantastic", "wonderful"]
+
+    # Analyze the sentiment of the text using VADER
+    sentiment = analyzer.polarity_scores(text)
     
     # Apply custom rules
     text_lower = text.lower()
@@ -43,18 +55,13 @@ def vader_sentiment_analyzer(text):
         if phrase in text_lower:
             sentiment['compound'] -= analyzer.polarity_scores(phrase)['compound']
             sentiment['compound'] += adjustment
-
-    # Neutralize specfic words in certain contexts
-    context_phrases = [
-        "darkest hour",
-        "united kingdom",
-        "united states"
-    ]
-
-    for phrase in context_phrases:
-        if phrase in text_lower:
-            sentiment['compound'] -= analyzer.polarity_scores(phrase)['compound']
     
+    # Detect overall negativity and adjust positive words
+    if sentiment['compound'] < -0.5:
+        for word in positive_words:
+            if word in text_lower:
+                sentiment['compound'] -= analyzer.polarity_scores(word)['compound']
+
     return sentiment
 
 def vader_sentiment_label(sentiment):

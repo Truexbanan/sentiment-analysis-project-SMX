@@ -5,6 +5,20 @@ from dotenv import load_dotenv
 # Load environment variables from a .env file
 load_dotenv()
 
+def initialize_database_and_tables():
+    """
+    Connect to the database and create necessary tables.
+
+    @param: None.
+    @ret conn: The connection object to the database.
+    @ret cursor: The cursor object to execute database queries. 
+    """
+    conn = connect_to_database()
+    cursor = conn.cursor()
+    create_sentiment_analysis_table(cursor)
+    create_geospatial_analysis_table(cursor)
+    return conn, cursor
+
 def connect_to_database():
     """
     Establish a connection to the database.

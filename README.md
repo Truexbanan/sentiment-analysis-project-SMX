@@ -124,20 +124,15 @@ To use the AWS Translate service, you need to configure your AWS credentials. Fo
      Default output format [None]: your_format
      ```
 
-## Running the Program
+## Running the Program 
 
-1. From the project directory, change to the 'src' directory.
-   ```
-   cd src
-   ```
+1. Ensure that you have an `.env` file, containing the database parameters. If you do not permit access, you will be unable to run this program. This file needs to be located outside of the sentiment-analysis-project directory.
 
-2. Ensure that you have an `.env` file, containing the database parameters. If you do not permit access, you will be unable to run this program. This file needs to be located outside of the sentiment-analysis-project directory.
-
-3. Run the `main.py` file.
+2. Run the `main.py` file in the project directory.
 
    Windows:
    ```
-   python main.py
+   py main.py
    ```
 
    MacOS/Linux:

@@ -1,10 +1,18 @@
 import logging
-from database_utils import *
-from normalization import preprocess_data
-from sentiment_analysis import count_sentiments, vader_sentiment_analyzer, vader_sentiment_label
-from data_visualization import visualize_sentiment, print_sentiment_analysis
-from Roberta_process_data import analyze_data
-from geospatial_analysis import geospatial_analyzer
+from utils.database.database_utils import (
+    initialize_database_and_tables,
+    fetch_post_data_from_database,
+    fetch_geospatial_data_from_database,
+    insert_geospatial_data_to_database,
+    insert_vader_data_to_database,
+    insert_roberta_data_to_database,
+    close_connection_to_database
+)
+from src.normalization import preprocess_data
+from src.sentiment_analysis import count_sentiments, vader_sentiment_analyzer, vader_sentiment_label
+from src.data_visualization import visualize_sentiment, print_sentiment_analysis
+from src.roberta_process_data import roberta_analyze_data
+from src.geospatial_analysis import geospatial_analyzer
 
 logging.basicConfig(level=logging.ERROR, format='[%(asctime)s] [%(levelname)s] %(message)s')
 
@@ -15,18 +23,14 @@ def main():
     @param: None.
     @ret: None.
     """
-    # Connect to the database
-    conn = connect_to_database()
-    cursor = conn.cursor()
-
-    # Create the sentiment and geospatial analysis tables if they don't exist
-    create_sentiment_analysis_table(cursor)
-    create_geospatial_analysis_table(cursor)
+    # Connect to the database and create tables
+    conn, cursor = initialize_database_and_tables()
 
     # Fetch data from the database
     data = fetch_post_data_from_database(cursor)
     geospatial_data = fetch_geospatial_data_from_database(cursor)
     if not data:
+        close_connection_to_database(conn, cursor)
         return  # Exit if data is None
 
     # Preprocess data
@@ -35,7 +39,7 @@ def main():
     """ SENTIMENT ANALYSIS """
     # Analyze sentiment of preprocessed data
     vader_results = [[item[0], item[1], vader_sentiment_label(vader_sentiment_analyzer(item[1]))] for item in processed_data]
-    roberta_results = analyze_data(processed_data)
+    roberta_results = roberta_analyze_data(processed_data)
 
     # Count sentiments for VADER
     vader_sentiment_counts = count_sentiments(vader_results)

@@ -1,7 +1,11 @@
 import pandas as pd
 import torch
 from transformers import AutoModelForSequenceClassification
-from RobertaToken import tokenize_data
+from utils.json.json_utils import load_json
+from src.normalization import preprocess_data
+from src.roberta_token import tokenize_data
+import os
+import json
 
 # Define a constant for the neutral threshold
 # Amount of neutrals and NEUTRAL_THRESHOLD have an inverse relationship 
@@ -56,7 +60,7 @@ def adjust_thresholds(logits, neutral_threshold=0.65):
 
     return adjusted_predictions
 
-def analyze_data(raw_data):
+def roberta_analyze_data(raw_data):
     # Convert to DataFrame for easier processing
     try:
         df = create_dataframe(raw_data)
