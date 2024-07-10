@@ -1,8 +1,6 @@
 import logging
 from utils.database.database_utils import (
-    connect_to_database,
-    create_sentiment_analysis_table,
-    create_geospatial_analysis_table,
+    initialize_database_and_tables,
     fetch_post_data_from_database,
     fetch_geospatial_data_from_database,
     insert_geospatial_data_to_database,
@@ -25,18 +23,14 @@ def main():
     @param: None.
     @ret: None.
     """
-    # Connect to the database
-    conn = connect_to_database()
-    cursor = conn.cursor()
-
-    # Create the sentiment and geospatial analysis tables if they don't exist
-    create_sentiment_analysis_table(cursor)
-    create_geospatial_analysis_table(cursor)
+    # Connect to the database and create tables
+    conn, cursor = initialize_database_and_tables()
 
     # Fetch data from the database
     data = fetch_post_data_from_database(cursor)
     geospatial_data = fetch_geospatial_data_from_database(cursor)
     if not data:
+        close_connection_to_database(conn, cursor)
         return  # Exit if data is None
 
     # Preprocess data
