@@ -11,7 +11,7 @@ from src.geospatial_analysis import geospatial_analyzer
 from src.data_visualization import print_sentiment_analysis, visualize_sentiment
 
 # Import roberta_process_data.py function
-from src.roberta_process_data import analyze_data
+from src.roberta_process_data import roberta_analyze_data
 
 # Import roberta_token.py function
 from src.roberta_token import tokenize_data

@@ -60,7 +60,7 @@ def adjust_thresholds(logits, neutral_threshold=0.65):
 
     return adjusted_predictions
 
-def analyze_data(raw_data):
+def roberta_analyze_data(raw_data):
     # Convert to DataFrame for easier processing
     try:
         df = create_dataframe(raw_data)
