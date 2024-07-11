@@ -1,4 +1,5 @@
 import psycopg2
+import numpy as np
 import os
 from dotenv import load_dotenv
 
@@ -84,7 +85,7 @@ def fetch_post_data_from_database(cursor):
     cursor.execute("SELECT postid, content FROM uk_prime_minister;")
     data = cursor.fetchall() # Initially stored as a list of tuples
 
-    formatted_data = [[row[0], row[1]] for row in data]
+    formatted_data = np.array([[row[0], row[1]] for row in data])
     return formatted_data
 
 def fetch_geospatial_data_from_database(cursor):
@@ -101,7 +102,10 @@ def fetch_geospatial_data_from_database(cursor):
     """
     cursor.execute(fetch_query)
     data = cursor.fetchall()  # This will be a list of tuples
-    return [list(row) for row in data]  # Convert each tuple to a list
+
+    # Convert each tuple to a list and then to a NumPy array
+    formatted_data = np.array([list(row) for row in data])
+    return formatted_data
 
 def insert_geospatial_data_to_database(cursor, data):
     """
@@ -136,6 +140,7 @@ def insert_sentiment_data_to_database(cursor, data, sentiment_column):
         ON CONFLICT (postid) DO UPDATE SET
         {sentiment_column} = EXCLUDED.{sentiment_column};
     """
+    # Convert to list of tuples for executemany
     formatted_data = [(item[0], item[1], item[2]) for item in data]
     cursor.executemany(insert_query, formatted_data)
 

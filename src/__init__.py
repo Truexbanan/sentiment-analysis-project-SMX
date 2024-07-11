@@ -2,7 +2,7 @@
 from src.normalization import load_spacy_model, translate_text, preprocess_text, preprocess_data
 
 # Import sentiment_analysis.py functions
-from src.sentiment_analysis import vader_sentiment_analyzer, vader_sentiment_label, count_sentiments
+from src.sentiment_analysis import vader_analyze_sentiment, vader_label_sentiment, count_sentiments, vader_analyze_batch
 
 # Import geospatial_analysis.py function
 from src.geospatial_analysis import geospatial_analyzer

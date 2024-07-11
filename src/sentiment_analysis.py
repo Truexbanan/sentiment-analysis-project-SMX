@@ -1,18 +1,18 @@
+import numpy as np
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-def vader_sentiment_analyzer(text):
+# Initialize the VADER sentiment analyzer once
+vader_analyzer = SentimentIntensityAnalyzer()
+
+def vader_analyze_sentiment(text):
     """
     Analyze the sentiment of the text using VADER and apply custom rules.
 
     @param text: The text to analyze.
     @ret: A dictionary containing the sentiment scores.
     """
-    # Initialize the VADER sentiment analyzer
-    analyzer = SentimentIntensityAnalyzer()
+    sentiment = vader_analyzer.polarity_scores(text)
 
-    sentiment = analyzer.polarity_scores(text)
-
-    # Custom rules for specific phrases:
     custom_rules = {
         "achievement": 0.2,
         "backlash": -0.3,
@@ -46,25 +46,20 @@ def vader_sentiment_analyzer(text):
     
     positive_words = ["love", "loved", "great", "excellent", "fantastic", "wonderful"]
 
-    # Analyze the sentiment of the text using VADER
-    sentiment = analyzer.polarity_scores(text)
-    
-    # Apply custom rules
     text_lower = text.lower()
     for phrase, adjustment in custom_rules.items():
         if phrase in text_lower:
-            sentiment['compound'] -= analyzer.polarity_scores(phrase)['compound']
+            sentiment['compound'] -= vader_analyzer.polarity_scores(phrase)['compound']
             sentiment['compound'] += adjustment
     
-    # Detect overall negativity and adjust positive words
     if sentiment['compound'] < -0.5:
         for word in positive_words:
             if word in text_lower:
-                sentiment['compound'] -= analyzer.polarity_scores(word)['compound']
+                sentiment['compound'] -= vader_analyzer.polarity_scores(word)['compound']
 
     return sentiment
 
-def vader_sentiment_label(sentiment):
+def vader_label_sentiment(sentiment):
     """
     Label the sentiment based on the sentiment scores.
 
@@ -94,3 +89,22 @@ def count_sentiments(data):
             sentiment_counts[sentiment] = 1
 
     return sentiment_counts
+
+def vader_analyze_batch(data):
+    """
+    Analyze sentiments for a batch of data items.
+
+    @param data: A NumPy array of [index, text] pairs.
+    @ret: A NumPy array of [index, text, sentiment_label] pairs.
+    """
+    # Convert to NumPy array if not already
+    if not isinstance(data, np.ndarray):
+        data = np.array(data)
+
+    results = []
+    for index, text in data:
+        sentiment = vader_analyze_sentiment(text)
+        sentiment_label = vader_label_sentiment(sentiment)
+        results.append([index, text, sentiment_label])
+
+    return np.array(results)
