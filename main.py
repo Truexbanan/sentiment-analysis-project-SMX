@@ -12,7 +12,7 @@ from src.normalization import preprocess_data
 from src.sentiment_analysis import count_sentiments, vader_analyze_batch
 from src.data_visualization import visualize_sentiment, print_sentiment_analysis
 from src.roberta_process_data import roberta_analyze_data
-from src.geospatial_analysis import geospatial_analyzer
+from src.geospatial_analysis import analyze_geospatial
 
 import time
 
@@ -71,7 +71,7 @@ def main():
     """ GEOSPATIAL ANALYSIS """
     # Analyze geospatial data
     geospatial_analysis_start_time = time.time()
-    geospatial_analyzer(geospatial_data)
+    analyze_geospatial(geospatial_data)
     print(f"Geospatial analysis done in {time.time() - geospatial_analysis_start_time:.2f} seconds.")
 
     # Commit changes and close the connection to the database
