@@ -91,7 +91,7 @@ def roberta_analyze_data(raw_data):
     adjusted_predictions = adjust_thresholds(outputs.logits, neutral_threshold=NEUTRAL_THRESHOLD)
 
     labels = ["Negative", "Neutral", "Positive"]
-    results = [(item[0], item[1], labels[pred]) for item, pred in zip(raw_data, adjusted_predictions)]
+    results = [[item[0], item[1], labels[pred]] for item, pred in zip(raw_data, adjusted_predictions)]
 
 
     return results
