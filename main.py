@@ -53,7 +53,14 @@ def main():
     # Analyze sentiment of preprocessed data
     sentiment_analysis_start_time = time.time()
     vader_results = vader_analyze_batch(processed_data)
-    roberta_results = roberta_analyze_data(processed_data)
+
+    # Analyze sentiment of raw data using RoBERTa in batches
+    batch_size = 200  # Adjust batch size according to your memory capacity
+    roberta_results = []
+    for i in range(0, len(data), batch_size):
+        batch = data[i:i+batch_size]
+        roberta_results.extend(roberta_analyze_data(batch))
+
     print(f"Sentiment analysis done in {time.time() - sentiment_analysis_start_time:.2f} seconds.")
 
     # Count sentiments for VADER
