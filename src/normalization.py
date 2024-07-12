@@ -94,8 +94,8 @@ def preprocess_data(data):
     """
     Preprocess a list of data items using parallel processing.
     
-    @param data: A NumPy array of [index, text] pairs.
-    @ret: A NumPy array of unique [index, preprocessed_text] pairs.
+    @param data: A NumPy array of [id, text] pairs.
+    @ret: A NumPy array of unique [id, preprocessed_text] pairs.
     """
     unique_processed_texts = set()
     processed_data = []

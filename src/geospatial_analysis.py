@@ -1,24 +1,18 @@
-# import geopandas as gpd
-# import pandas as pd
-# import matplotlib.pyplot as plt
-
-# def geospatial_analyzer(data):
-#     df = pd.DataFrame(data, columns=['postid', 'longitude', 'latitude', 'location'])
-    
-#     # Create GeoDataFrame
-#     gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df.longitude, df.latitude))
-
-#     # Set the coordinate reference system (CRS)
-#     gdf.set_crs(epsg=4326, inplace=True)
-
-#     print(gdf)
-#     # Plotting the geospatial data (optional)
-#     gdf.plot()
-#     plt.show()
-
 import fiona
-from shapely.geometry import shape
+from shapely.geometry import Point, shape
 from pyproj import Transformer
+import matplotlib.pyplot as plt
 
-def analyze_geospatial(data):
-    pass
+def analyze_geospatial(geospatial_data):
+    # Convert to Shapely Points
+    points = [Point(lon, lat) for _, lon, lat, _ in geospatial_data]
+
+    # Plot the points
+    plt.figure()
+    for point in points:
+        print(point)
+        plt.plot(point.x, point.y, 'o')
+    plt.xlabel('Longitude')
+    plt.ylabel('Latitude')
+    plt.title('Geospatial Data Points')
+    plt.show()
