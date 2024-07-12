@@ -58,9 +58,9 @@ def insert_sentiment_data_to_database(cursor, data, table_name):
     @ret: None.
     """
     insert_query = f"""
-        INSERT INTO {table_name} (uk_prime_minister_content_id, sentiment)
+        INSERT INTO {table_name} (uk_prime_minister_content_processed_id, sentiment)
         VALUES (%s, %s)
-        ON CONFLICT (uk_prime_minister_content_id) DO UPDATE SET
+        ON CONFLICT (uk_prime_minister_content_processed_id) DO UPDATE SET
         sentiment = EXCLUDED.sentiment;
     """
     # Convert to list of tuples for executemany
