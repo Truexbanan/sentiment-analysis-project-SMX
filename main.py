@@ -1,18 +1,22 @@
 import logging
-from utils.database.database_utils import (
+from utils.database import (
     initialize_database_and_tables,
-    fetch_post_data_from_database,
+    fetch_prime_minister_content,
     fetch_geospatial_data_from_database,
     insert_geospatial_data_to_database,
+    insert_prime_minister_content,
+    insert_prime_minister_processed_content,
     insert_vader_data_to_database,
     insert_roberta_data_to_database,
     close_connection_to_database
 )
 from src.normalization import preprocess_data
-from src.sentiment_analysis import count_sentiments, vader_sentiment_analyzer, vader_sentiment_label
+from src.sentiment_analysis import count_sentiments, vader_analyze_batch
 from src.data_visualization import visualize_sentiment, print_sentiment_analysis
 from src.roberta_process_data import roberta_analyze_data
-from src.geospatial_analysis import geospatial_analyzer
+from src.geospatial_analysis import analyze_geospatial
+
+import time
 
 logging.basicConfig(level=logging.ERROR, format='[%(asctime)s] [%(levelname)s] %(message)s')
 
@@ -23,22 +27,32 @@ def main():
     @param: None.
     @ret: None.
     """
+    start_time = time.time()
     # Connect to the database and create tables
     conn, cursor = initialize_database_and_tables()
+    print(f"Database initialized in {time.time() - start_time:.2f} seconds.")
 
     # Fetch data from the database
-    data = fetch_post_data_from_database(cursor)
+    fetch_start_time = time.time()
+    data = fetch_prime_minister_content(cursor)
+    insert_prime_minister_content(cursor, data)
     geospatial_data = fetch_geospatial_data_from_database(cursor)
-    if not data:
+    if data.size == 0:
         close_connection_to_database(conn, cursor)
+        print(f"Total execution time: {time.time() - start_time:.2f} seconds.")
         return  # Exit if data is None
+    print(f"Fetched data in {time.time() - fetch_start_time:.2f} seconds.")
 
     # Preprocess data
+    preprocess_start_time = time.time()
     processed_data = preprocess_data(data)
+    insert_prime_minister_processed_content(cursor, processed_data)
+    print(f"Data preprocessed in {time.time() - preprocess_start_time:.2f} seconds.")
 
     """ SENTIMENT ANALYSIS """
     # Analyze sentiment of preprocessed data
-    vader_results = [[item[0], item[1], vader_sentiment_label(vader_sentiment_analyzer(item[1]))] for item in processed_data]
+    sentiment_analysis_start_time = time.time()
+    vader_results = vader_analyze_batch(processed_data)
 
     # Analyze sentiment of raw data using RoBERTa in batches
     batch_size = 200  # Adjust batch size according to your memory capacity
@@ -47,13 +61,17 @@ def main():
         batch = data[i:i+batch_size]
         roberta_results.extend(roberta_analyze_data(batch))
 
+    print(f"Sentiment analysis done in {time.time() - sentiment_analysis_start_time:.2f} seconds.")
+
     # Count sentiments for VADER
     vader_sentiment_counts = count_sentiments(vader_results)
 
     # Insert the results into the database
+    insert_start_time = time.time()
     insert_vader_data_to_database(cursor, vader_results)
     insert_roberta_data_to_database(cursor, roberta_results)
     insert_geospatial_data_to_database(cursor, geospatial_data)
+    print(f"Data inserted into the database in {time.time() - insert_start_time:.2f} seconds.")
 
     # Print the sentiment counts for VADER
     print_sentiment_analysis(vader_sentiment_counts)
@@ -63,10 +81,13 @@ def main():
 
     """ GEOSPATIAL ANALYSIS """
     # Analyze geospatial data
-    geospatial_analyzer(geospatial_data)
+    geospatial_analysis_start_time = time.time()
+    analyze_geospatial(geospatial_data)
+    print(f"Geospatial analysis done in {time.time() - geospatial_analysis_start_time:.2f} seconds.")
 
     # Commit changes and close the connection to the database
     close_connection_to_database(conn, cursor)
+    print(f"Total execution time: {time.time() - start_time:.2f} seconds.")
 
 if __name__ == '__main__':
     main()

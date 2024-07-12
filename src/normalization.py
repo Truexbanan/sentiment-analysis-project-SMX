@@ -2,6 +2,8 @@ import boto3
 import spacy
 import re # Regex library
 import logging
+import numpy as np
+import concurrent.futures
 
 def load_spacy_model(model_name):
     """
@@ -76,22 +78,44 @@ def preprocess_text(text):
     # Join list of tokens back into a single string
     return " ".join(tokens)
 
+def process_entry(entry):
+    """
+    Process a single entry by preprocessing the text.
+    
+    @param entry: A tuple containing the index and text.
+    @ret: A tuple containing the index and preprocessed text.
+    """
+    index, text = entry
+    processed_text = preprocess_text(text)
+    return index, processed_text
+
 def preprocess_data(data):
     """
-    Preprocess a list of data items.
+    Preprocess a list of data items using parallel processing.
     
-    @param data: A list of [index, text] pairs.
-    @ret: A list of unique [index, preprocessed_text] pairs.
+    @param data: A NumPy array of [index, text] pairs.
+    @ret: A NumPy array of unique [index, preprocessed_text] pairs.
     """
-    processed_data = []
-    # Ensure there are no duplicate posts
     unique_processed_texts = set()
+    processed_data = []
 
-    # Loop over list of lists
-    for index, text in data:
-        processed_text = preprocess_text(text)
-        if processed_text not in unique_processed_texts:
-            unique_processed_texts.add(processed_text)
-            processed_data.append([index, processed_text])
+    # Convert to NumPy array if not already
+    if not isinstance(data, np.ndarray):
+        data = np.array(data)
 
-    return processed_data
+    # Use ProcessPoolExecutor for parallel processing
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        # Submit tasks to the executor, where each task is to process an entry
+        future_to_entry = {executor.submit(process_entry, entry): entry for entry in data}
+        
+        # Iterate over Future objects as they complete and process the result
+        for future in concurrent.futures.as_completed(future_to_entry):
+            # Retrieve result of the completed task
+            index, processed_text = future.result()
+
+            # Ensure each processed text is unique before adding it to the result
+            if processed_text not in unique_processed_texts:
+                unique_processed_texts.add(processed_text)
+                processed_data.append([index, processed_text])
+
+    return np.array(processed_data)
