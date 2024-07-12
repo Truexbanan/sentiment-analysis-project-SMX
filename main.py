@@ -39,7 +39,13 @@ def main():
     """ SENTIMENT ANALYSIS """
     # Analyze sentiment of preprocessed data
     vader_results = [[item[0], item[1], vader_sentiment_label(vader_sentiment_analyzer(item[1]))] for item in processed_data]
-    roberta_results = roberta_analyze_data(processed_data)
+
+    # Analyze sentiment of raw data using RoBERTa in batches
+    batch_size = 200  # Adjust batch size according to your memory capacity
+    roberta_results = []
+    for i in range(0, len(data), batch_size):
+        batch = data[i:i+batch_size]
+        roberta_results.extend(roberta_analyze_data(batch))
 
     # Count sentiments for VADER
     vader_sentiment_counts = count_sentiments(vader_results)
