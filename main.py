@@ -1,9 +1,11 @@
 import logging
-from utils.database.database_utils import (
+from utils.database import (
     initialize_database_and_tables,
-    fetch_post_data_from_database,
+    fetch_prime_minister_content,
     fetch_geospatial_data_from_database,
     insert_geospatial_data_to_database,
+    insert_prime_minister_content,
+    insert_prime_minister_processed_content,
     insert_vader_data_to_database,
     insert_roberta_data_to_database,
     close_connection_to_database
@@ -32,7 +34,8 @@ def main():
 
     # Fetch data from the database
     fetch_start_time = time.time()
-    data = fetch_post_data_from_database(cursor)
+    data = fetch_prime_minister_content(cursor)
+    insert_prime_minister_content(cursor, data)
     geospatial_data = fetch_geospatial_data_from_database(cursor)
     if data.size == 0:
         close_connection_to_database(conn, cursor)
@@ -43,6 +46,7 @@ def main():
     # Preprocess data
     preprocess_start_time = time.time()
     processed_data = preprocess_data(data)
+    insert_prime_minister_processed_content(cursor, processed_data)
     print(f"Data preprocessed in {time.time() - preprocess_start_time:.2f} seconds.")
 
     """ SENTIMENT ANALYSIS """
