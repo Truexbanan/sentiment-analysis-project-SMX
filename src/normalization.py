@@ -24,8 +24,9 @@ nlp = load_spacy_model("en_core_web_lg")
 # Initialize the Amazon Translate client
 translate_client = boto3.client('translate', region_name='us-east-1')
 
-# Initialize translation cache
+# Initialize translation cache and preprocess cache
 translation_cache = {}
+preprocess_cache = {}
 
 def translate_text(text):
     """
@@ -116,6 +117,9 @@ def preprocess_data(data):
             # Ensure each processed text is unique before adding it to the result
             if processed_text not in unique_processed_texts:
                 unique_processed_texts.add(processed_text)
+                preprocess_cache[processed_text] = processed_text
                 processed_data.append([index, processed_text])
+            else:
+                processed_data.append([index, preprocess_cache[processed_text]])
 
     return np.array(processed_data)
