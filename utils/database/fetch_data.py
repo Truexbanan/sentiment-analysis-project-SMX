@@ -5,7 +5,7 @@ def fetch_prime_minister_content(cursor):
     Fetch content data from the uk_prime_minister table.
 
     @param: A cursor object to execute database commands.
-    @ret: A list of lists formatted as [[index, content], ...].
+    @ret: A list of lists formatted as [[id, content], ...].
     """
     cursor.execute("SELECT id, content FROM uk_prime_minister;")
     data = cursor.fetchall() # Initially stored as a list of tuples
@@ -18,7 +18,7 @@ def fetch_geospatial_data_from_database(cursor):
     Fetch data relevant to geospatial analysis from the uk_prime_minister table.
 
     @param: A cursor object to execute database commands.
-    @ret: A list of lists formatted as [[index, content], ...].
+    @ret: A list of lists formatted as [[id, longitude, latitude, location], ...].
     """
     fetch_query = """
         SELECT id, longitude, latitude, location
