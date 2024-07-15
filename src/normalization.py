@@ -52,13 +52,13 @@ def translate_text(text):
     except Exception as e:
         return text  # If translation fails, use original text
 
-def preprocess_text(text):
+def tokenize_text(text):
     """
-    Preprocess the text by removing mentions, hashtags, URLs, and extra spaces,
+    Tokenize the text by removing mentions, hashtags, URLs, and extra spaces,
     translating the text, and lemmatizing non-stop words and non-punctuation tokens.
-    
-    @param text: The text to preprocess.
-    @ret: The preprocessed text.
+
+    @param text: The text to tokenize.
+    @ret: A list of tokens
     """
     # Remove user tags or mentions
     text = re.sub(r'@\w+', '', text)
@@ -68,16 +68,23 @@ def preprocess_text(text):
     text = re.sub(r'http\S+|www\S+|\S+\.\S+', '', text, flags=re.IGNORECASE)
     # Remove Emails
     text = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '', text)
-
     # Remove extra spaces
     text = ' '.join(text.split())
 
     translated_text = translate_text(text)
     doc = nlp(translated_text)
     # Create list of lemmatized tokens, excluding stop words and punctuation
-    tokens = [token.lemma_ for token in doc if (not token.is_stop or token.dep_ == 'neg') and not token.is_punct]
-    # Join list of tokens back into a single string
-    return " ".join(tokens)
+    return [token.lemma_ for token in doc if (not token.is_stop or token.dep_ == 'neg') and not token.is_punct]
+
+def preprocess_text(text):
+    """
+    Preprocess the text by tokenizing, normalizing, and joining tokens into a single string.
+    
+    @param text: The text to preprocess.
+    @ret: The preprocessed text.
+    """
+    tokens = tokenize_text(text)
+    return " ".join(tokens) # Join list of tokens back into a single string
 
 def process_entry(entry):
     """
