@@ -7,8 +7,8 @@ from src.roberta_token import tokenize_data
 # Define constants for the thresholds
 # Amount of neutrals and NEUTRAL_THRESHOLD have an inverse relationship 
 
-NEUTRAL_THRESHOLD = 0.65
-SLIGHT_THRESHOLD = 0.4
+NEUTRAL_THRESHOLD = 0.7
+SLIGHT_THRESHOLD = 0.35
 
 class DataFrameCreationError(Exception):
     pass
