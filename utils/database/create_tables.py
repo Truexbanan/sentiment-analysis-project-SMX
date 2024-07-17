@@ -55,9 +55,9 @@ def create_roberta_sentiment_analysis_table(cursor):
     """
     create_table_query = """
     CREATE TABLE IF NOT EXISTS sentiment_analysis_roberta (
-        uk_prime_minister_content_processed_id INT PRIMARY KEY,
+        uk_prime_minister_content_id INT PRIMARY KEY,
         sentiment TEXT,
-        FOREIGN KEY (uk_prime_minister_content_processed_id) REFERENCES uk_prime_minister_content_processed(uk_prime_minister_content_id)
+        FOREIGN KEY (uk_prime_minister_content_id) REFERENCES uk_prime_minister_content(uk_prime_minister_id)
     );
     """
     cursor.execute(create_table_query)

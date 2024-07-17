@@ -14,9 +14,9 @@ from .database import (
     fetch_geospatial_data_from_database,
     insert_prime_minister_content,
     insert_prime_minister_processed_content,
+    insert_results_to_database,
     insert_geospatial_data_to_database,
     insert_vader_data_to_database,
     insert_roberta_data_to_database,
-    insert_results_to_database,
     close_connection_to_database
 )

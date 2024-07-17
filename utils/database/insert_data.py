@@ -62,17 +62,16 @@ def insert_geospatial_data_to_database(cursor, data):
     """
     cursor.executemany(insert_query, data)
 
-def insert_sentiment_data_to_database(cursor, data, table_name):
+def insert_vader_data_to_database(cursor, data):
     """
     Insert sentiment analysis results into the database.
 
     @param cursor: A cursor object to execute database commands.
-    @param data: A list of lists containing the sentiment analysis results.
-    @param table_name: The name of the table to insert the sentiment data into.
+    @param data: A list of lists containing the sentiment analysis results using VADER.
     @ret: None.
     """
     insert_query = f"""
-        INSERT INTO {table_name} (uk_prime_minister_content_processed_id, sentiment)
+        INSERT INTO sentiment_analysis_vader (uk_prime_minister_content_processed_id, sentiment)
         VALUES (%s, %s)
         ON CONFLICT (uk_prime_minister_content_processed_id) DO UPDATE SET
         sentiment = EXCLUDED.sentiment;
@@ -81,22 +80,20 @@ def insert_sentiment_data_to_database(cursor, data, table_name):
     formatted_data = [(item[0], item[2]) for item in data]
     cursor.executemany(insert_query, formatted_data)
 
-def insert_vader_data_to_database(cursor, data):
-    """
-    Insert VADER sentiment analysis results into the database.
-
-    @param cursor: A cursor object to execute database commands.
-    @param data: A list of lists containing the sentiment analysis results.
-    @ret: None.
-    """
-    insert_sentiment_data_to_database(cursor, data, "sentiment_analysis_vader")
-
 def insert_roberta_data_to_database(cursor, data):
     """
-    Insert roBERTa sentiment analysis results into the database.
+    Insert sentiment analysis results into the database.
 
     @param cursor: A cursor object to execute database commands.
-    @param data: A list of lists containing the sentiment analysis results.
+    @param data: A list of lists containing the sentiment analysis results using roBERTa.
     @ret: None.
     """
-    insert_sentiment_data_to_database(cursor, data, "sentiment_analysis_roberta")
+    insert_query = f"""
+        INSERT INTO sentiment_analysis_roberta (uk_prime_minister_content_id, sentiment)
+        VALUES (%s, %s)
+        ON CONFLICT (uk_prime_minister_content_id) DO UPDATE SET
+        sentiment = EXCLUDED.sentiment;
+    """ 
+    # Convert to list of tuples for executemany
+    formatted_data = [(item[0], item[2]) for item in data]
+    cursor.executemany(insert_query, formatted_data)
