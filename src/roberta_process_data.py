@@ -42,21 +42,32 @@ def adjust_thresholds(logits, neutral_threshold=0.65, slight_threshold=0.4):
 
     for prob in probabilities:
         print(f"Probabilities: {prob.tolist()}")
-        if prob[1] > neutral_threshold:  # Check if the neutral class exceeds the threshold
+        highest_prob_class = torch.argmax(prob).item()
+        highest_prob = prob[highest_prob_class]
+        
+        if highest_prob_class == 1 and highest_prob > neutral_threshold:
             print("Classified as Neutral")
             adjusted_predictions.append(1)  # Classify as neutral
-        elif prob[0] > slight_threshold and prob[1] > slight_threshold:
-            print("Classified as Slightly Negative")
-            adjusted_predictions.append(3)  # Classify as slightly negative
-        elif prob[2] > slight_threshold and prob[1] > slight_threshold:
+        elif highest_prob_class == 2 and prob[1] > slight_threshold:
             print("Classified as Slightly Positive")
             adjusted_predictions.append(4)  # Classify as slightly positive
-        elif prob[0] > prob[2]:
-            print("Classified as Negative")
-            adjusted_predictions.append(0)  # Classify as negative
-        else:
+        elif highest_prob_class == 0 and prob[1] > slight_threshold:
+            print("Classified as Slightly Negative")
+            adjusted_predictions.append(3)  # Classify as slightly negative
+        elif highest_prob_class == 2 and prob[1] <= slight_threshold:
             print("Classified as Positive")
             adjusted_predictions.append(2)  # Classify as positive
+        elif highest_prob_class == 0 and prob[1] <= slight_threshold:
+            print("Classified as Negative")
+            adjusted_predictions.append(0)  # Classify as negative
+        elif highest_prob_class == 1 and highest_prob <= neutral_threshold:
+            second_highest_prob_class = torch.argsort(prob, descending=True)[1].item()
+            if second_highest_prob_class == 0:
+                print("Classified as Slightly Negative")
+                adjusted_predictions.append(3)  # Classify as slightly negative
+            elif second_highest_prob_class == 2:
+                print("Classified as Slightly Positive")
+                adjusted_predictions.append(4)  # Classify as slightly positive
 
     return adjusted_predictions
 
