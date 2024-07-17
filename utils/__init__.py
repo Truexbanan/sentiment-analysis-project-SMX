@@ -10,12 +10,13 @@ from .database import (
     create_vader_sentiment_analysis_table,
     create_roberta_sentiment_analysis_table,
     create_geospatial_analysis_table,
-    fetch_prime_minister_content,
+    fetch_prime_minister_data,
     fetch_geospatial_data_from_database,
     insert_prime_minister_content,
     insert_prime_minister_processed_content,
     insert_geospatial_data_to_database,
     insert_vader_data_to_database,
     insert_roberta_data_to_database,
+    insert_results_to_database,
     close_connection_to_database
 )

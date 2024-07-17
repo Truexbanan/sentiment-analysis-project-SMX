@@ -49,6 +49,7 @@ def vader_analyze_sentiment(text):
         "livelihood": 0,
         "party": 0,  # Usually reference political party
         "play": 0,
+        "great britain": 0,
         "united kingdom": 0,
         "united states": 0,
         "united nations": 0
