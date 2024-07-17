@@ -9,8 +9,7 @@ from utils.database import (
     close_connection_to_database
 )
 from src.normalization import preprocess_data
-from src.sentiment_analysis import count_sentiments, vader_analyze_batch
-from src.data_visualization import print_sentiment_analysis
+from src.sentiment_analysis import vader_analyze_batch
 from src.roberta_process_data import roberta_analyze_data
 from src.geospatial_analysis import analyze_geospatial
 
@@ -42,7 +41,7 @@ def main():
         return  # Exit if data is None
     print(f"Fetched data in {time.time() - fetch_start_time:.2f} seconds.")
 
-    # Preprocess data
+    # Preprocess data and store in table for processed content
     preprocess_start_time = time.time()
     processed_data = preprocess_data(data)
     insert_prime_minister_processed_content(cursor, processed_data)
@@ -64,16 +63,10 @@ def main():
 
     print(f"roBERTa Sentiment analysis done in {time.time() - roberta_sentiment_analysis_start_time:.2f} seconds.")
 
-    # Count sentiments for VADER
-    vader_sentiment_counts = count_sentiments(vader_results)
-
     # Insert the results into the database
     insert_start_time = time.time()
     insert_results_to_database(cursor, vader_results, roberta_results, geospatial_data)
     print(f"Data inserted into the database in {time.time() - insert_start_time:.2f} seconds.")
-
-    # Print the sentiment counts for VADER
-    print_sentiment_analysis(vader_sentiment_counts)
 
     """ GEOSPATIAL ANALYSIS """
     # Analyze geospatial data
