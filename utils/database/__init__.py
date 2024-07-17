@@ -8,12 +8,13 @@ from .create_tables import (
 )
 from .insert_data import (
     insert_prime_minister_content,
+    insert_prime_minister_processed_content,
+    insert_results_to_database,
     insert_geospatial_data_to_database,
     insert_vader_data_to_database,
-    insert_roberta_data_to_database,
-    insert_prime_minister_processed_content
+    insert_roberta_data_to_database
 )
-from .fetch_data import fetch_prime_minister_content, fetch_geospatial_data_from_database
+from .fetch_data import fetch_prime_minister_data, fetch_geospatial_data_from_database
 
 def initialize_database_and_tables():
     """

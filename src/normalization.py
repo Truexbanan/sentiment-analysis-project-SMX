@@ -24,8 +24,9 @@ nlp = load_spacy_model("en_core_web_lg")
 # Initialize the Amazon Translate client
 translate_client = boto3.client('translate', region_name='us-east-1')
 
-# Initialize translation cache
+# Initialize translation cache and preprocess cache
 translation_cache = {}
+preprocess_cache = {}
 
 def translate_text(text):
     """
@@ -51,13 +52,13 @@ def translate_text(text):
     except Exception as e:
         return text  # If translation fails, use original text
 
-def preprocess_text(text):
+def tokenize_text(text):
     """
-    Preprocess the text by removing mentions, hashtags, URLs, and extra spaces,
+    Tokenize the text by removing mentions, hashtags, URLs, and extra spaces,
     translating the text, and lemmatizing non-stop words and non-punctuation tokens.
-    
-    @param text: The text to preprocess.
-    @ret: The preprocessed text.
+
+    @param text: The text to tokenize.
+    @ret: A list of tokens
     """
     # Remove user tags or mentions
     text = re.sub(r'@\w+', '', text)
@@ -67,16 +68,23 @@ def preprocess_text(text):
     text = re.sub(r'http\S+|www\S+|\S+\.\S+', '', text, flags=re.IGNORECASE)
     # Remove Emails
     text = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '', text)
-
     # Remove extra spaces
     text = ' '.join(text.split())
 
     translated_text = translate_text(text)
     doc = nlp(translated_text)
     # Create list of lemmatized tokens, excluding stop words and punctuation
-    tokens = [token.lemma_ for token in doc if (not token.is_stop or token.dep_ == 'neg') and not token.is_punct]
-    # Join list of tokens back into a single string
-    return " ".join(tokens)
+    return [token.lemma_ for token in doc if (not token.is_stop or token.dep_ == 'neg') and not token.is_punct]
+
+def preprocess_text(text):
+    """
+    Preprocess the text by tokenizing, normalizing, and joining tokens into a single string.
+    
+    @param text: The text to preprocess.
+    @ret: The preprocessed text.
+    """
+    tokens = tokenize_text(text)
+    return " ".join(tokens) # Join list of tokens back into a single string
 
 def process_entry(entry):
     """
@@ -93,8 +101,8 @@ def preprocess_data(data):
     """
     Preprocess a list of data items using parallel processing.
     
-    @param data: A NumPy array of [index, text] pairs.
-    @ret: A NumPy array of unique [index, preprocessed_text] pairs.
+    @param data: A NumPy array of [id, text] pairs.
+    @ret: A NumPy array of unique [id, preprocessed_text] pairs.
     """
     unique_processed_texts = set()
     processed_data = []
@@ -116,6 +124,9 @@ def preprocess_data(data):
             # Ensure each processed text is unique before adding it to the result
             if processed_text not in unique_processed_texts:
                 unique_processed_texts.add(processed_text)
+                preprocess_cache[processed_text] = processed_text
                 processed_data.append([index, processed_text])
+            else:
+                processed_data.append([index, preprocess_cache[processed_text]])
 
     return np.array(processed_data)

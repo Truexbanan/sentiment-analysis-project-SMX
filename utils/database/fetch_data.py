@@ -1,6 +1,6 @@
 import numpy as np
 
-def fetch_prime_minister_content(cursor):
+def fetch_prime_minister_data(cursor):
     """
     Fetch content data from the uk_prime_minister table.
 

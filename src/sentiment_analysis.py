@@ -18,41 +18,54 @@ def vader_analyze_sentiment(text):
         "backlash": -0.3,
         "bankruptcy": -0.6,
         "bravery": 0.3,
-        "challenge": 0,
+        "challenge": -0.2,
         "courage": 0.3,
-        "cut sanitation services": -0.5,
-        "darkest hour": 0,
         "dim lights": -0.4,
-        "energy": 0,
         "fear": -0.6,
         "flee": -0.7,
         "forced": -0.5,
         "heroism": 0.2,
         "inspiration": 0.2,
+        "struggle": -0.4,
+        "support": 0.3,
+        "thank": 0.3,
+        "threaten": -0.7,
+        "unity": 0.2,
+        "victory": 0.2,
+        "abysmal": -0.5,
+        "ail": -0.4,
+        "broken": -0.5,
+        "poor": -0.3,
+        "weird": -0.45,
+        "cut sanitation services": -0.5,
+        "not heartless cynical": -0.65,
+        "invite": 0.15,
+        "r e p e n t": -0.2,
+        "like": 0,
+        "committed": 0,
+        "darkest hour": 0,
+        "energy": 0,
         "lead": 0,
         "livelihood": 0,
         "party": 0,  # Usually reference political party
         "play": 0,
-        "struggle": -0.4,
-        "support": 0.2,
-        "thank": 0.3,
-        "threaten": -0.7,
-        "unity": 0.2,
+        "great britain": 0,
         "united kingdom": 0,
         "united states": 0,
-        "united nations": 0,
-        "victory": 0.2
+        "united nations": 0
     }
     
     positive_words = ["love", "loved", "great", "excellent", "fantastic", "wonderful"]
 
+    # Fine-tune the sentiment score based on specific rules
     text_lower = text.lower()
     for phrase, adjustment in custom_rules.items():
         if phrase in text_lower:
             sentiment['compound'] -= vader_analyzer.polarity_scores(phrase)['compound']
             sentiment['compound'] += adjustment
     
-    if sentiment['compound'] < -0.5:
+    # If overall sentiment should be negative, adjust presence of positive words
+    if sentiment['compound'] < -0.2:
         for word in positive_words:
             if word in text_lower:
                 sentiment['compound'] -= vader_analyzer.polarity_scores(word)['compound']
