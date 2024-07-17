@@ -10,7 +10,7 @@ from utils.database import (
 )
 from src.normalization import preprocess_data
 from src.sentiment_analysis import count_sentiments, vader_analyze_batch
-from src.data_visualization import visualize_sentiment, print_sentiment_analysis
+from src.data_visualization import print_sentiment_analysis
 from src.roberta_process_data import roberta_analyze_data
 from src.geospatial_analysis import analyze_geospatial
 
@@ -74,9 +74,6 @@ def main():
 
     # Print the sentiment counts for VADER
     print_sentiment_analysis(vader_sentiment_counts)
-
-    # Visualize sentiments in a pie chart for VADER results
-    visualize_sentiment(vader_results)
 
     """ GEOSPATIAL ANALYSIS """
     # Analyze geospatial data
