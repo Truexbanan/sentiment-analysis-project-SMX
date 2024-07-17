@@ -1,15 +1,14 @@
 import pandas as pd
 import torch
 from transformers import AutoModelForSequenceClassification
-from utils.json.json_utils import load_json
-from src.normalization import preprocess_data
 from src.roberta_token import tokenize_data
-import os
-import json
 
-# Define a constant for the neutral threshold
+
+# Define constants for the thresholds
 # Amount of neutrals and NEUTRAL_THRESHOLD have an inverse relationship 
-NEUTRAL_THRESHOLD = 0.99
+
+NEUTRAL_THRESHOLD = 0.65
+SLIGHT_THRESHOLD = 0.4
 
 class DataFrameCreationError(Exception):
     pass
@@ -26,7 +25,7 @@ def create_dataframe(processed_data):
 
 # logits - This parameter expects the raw output from the model
     
-def adjust_thresholds(logits, neutral_threshold=0.65):
+def adjust_thresholds(logits, neutral_threshold=0.65, slight_threshold=0.4):
 
     # softmax function is a mathematical function that converts a vector of raw scores (logits) into probabilities - https://en.wikipedia.org/wiki/Softmax_function
     # Convert logits to probabilities that sum to 1
@@ -38,27 +37,29 @@ def adjust_thresholds(logits, neutral_threshold=0.65):
 
     print(f"Adjusting threshold with {neutral_threshold} threshold value")
 
-
-   # Iterates over each probability vector in the probabilities tensor. 
-    #Each pr is a vector containing the probabilities for each class (negative, neutral, positive).
+    # Iterates over each probability vector in the probabilities tensor. 
+    # Each pr is a vector containing the probabilities for each class (negative, SN, neutral, SP, positive).
 
     for prob in probabilities:
         print(f"Probabilities: {prob.tolist()}")
         if prob[1] > neutral_threshold:  # Check if the neutral class exceeds the threshold
             print("Classified as Neutral")
             adjusted_predictions.append(1)  # Classify as neutral
+        elif prob[0] > slight_threshold and prob[1] > slight_threshold:
+            print("Classified as Slightly Negative")
+            adjusted_predictions.append(3)  # Classify as slightly negative
+        elif prob[2] > slight_threshold and prob[1] > slight_threshold:
+            print("Classified as Slightly Positive")
+            adjusted_predictions.append(4)  # Classify as slightly positive
+        elif prob[0] > prob[2]:
+            print("Classified as Negative")
+            adjusted_predictions.append(0)  # Classify as negative
         else:
-            highest_prob_class = torch.argmax(prob).item()
-            if highest_prob_class == 1:  # If the highest probability is neutral, but it doesn't exceed the threshold, pick the next highest class
-                non_neutral_probs = [prob[0], prob[2]]
-                highest_non_neutral_class = torch.argmax(torch.tensor(non_neutral_probs)).item()
-                adjusted_predictions.append(highest_non_neutral_class if highest_non_neutral_class == 0 else 2)
-                print(f"Classified as {highest_non_neutral_class if highest_non_neutral_class == 0 else 2}")
-            else:
-                print(f"Classified as {highest_prob_class}")
-                adjusted_predictions.append(highest_prob_class)  # Otherwise, classify as the highest probability class (negative or positive)
+            print("Classified as Positive")
+            adjusted_predictions.append(2)  # Classify as positive
 
     return adjusted_predictions
+
 
 def roberta_analyze_data(raw_data):
     # Convert to DataFrame for easier processing
@@ -88,9 +89,9 @@ def roberta_analyze_data(raw_data):
     # Extract the predicted sentiments
     # Adjust the thresholds to classify sentiments
 
-    adjusted_predictions = adjust_thresholds(outputs.logits, neutral_threshold=NEUTRAL_THRESHOLD)
+    adjusted_predictions = adjust_thresholds(outputs.logits, neutral_threshold=NEUTRAL_THRESHOLD, slight_threshold=SLIGHT_THRESHOLD)
 
-    labels = ["Negative", "Neutral", "Positive"]
+    labels = ["Negative", "Neutral", "Positive", "Slightly Negative", "Slightly Positive"]
     results = [[item[0], item[1], labels[pred]] for item, pred in zip(raw_data, adjusted_predictions)]
 
 
