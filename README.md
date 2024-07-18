@@ -6,9 +6,10 @@
 3. [AWS Configuration](#aws-configuration)
 4. [Running the Program](#running-the-program)
 5. [Usage](#usage)
-6. [Results](#results)
-7. [Authors and Acknowledgment](#authors-and-acknowledgment)
-8. [License](#license)
+6. [Extending the Project](#extending-the-project)
+7. [Results](#results)
+8. [Authors and Acknowledgment](#authors-and-acknowledgment)
+9. [License](#license)
 
 ## Overview
 
