@@ -4,6 +4,9 @@ from pyproj import Transformer
 import matplotlib.pyplot as plt
 import cartopy.crs as ccrs # coordinate reference system
 import cartopy.feature as cf
+import logging
+
+logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(message)s')
 
 def analyze_geospatial(geospatial_data):
     """
@@ -18,19 +21,28 @@ def analyze_geospatial(geospatial_data):
     # Convert to Shapely Points and apply coordinate transformation
     transformed_points = []
     original_points = []
-    for _, lon, lat, _ in geospatial_data:
-        point = Point(lon, lat)
-        # Transform coordinates if necessary
-        x, y = transformer.transform(point.x, point.y)
-        transformed_points.append((x, y))
-        original_points.append((lon, lat))
+    for data in geospatial_data:
+        _, lon, lat, _ = data
+        try:
+            lon, lat = float(lon), float(lat)
+            point = Point(lon, lat)
+            # Transform coordinates if necessary
+            x, y = transformer.transform(point.x, point.y)
+            transformed_points.append((x, y))
+            original_points.append((lon, lat))
+        except ValueError as e:
+            logging.error(f"Invalid data point {data}: {e}")
+            continue
 
     # Plot on world map
-    ax = plt.axes(projection = ccrs.Mercator())
+    plt.figure(figsize=(12, 6))
+    ax = plt.axes(projection=ccrs.Mercator())
     ax.add_feature(cf.COASTLINE)
-    ax.set_title("Title")
-    plt.title('World Map with Geospatial Data Points')
+    ax.set_title("World Map with Geospatial Data Points")
+    for lon, lat in original_points:
+        plt.plot(lon, lat, 'o', markersize=5, transform=ccrs.Geodetic())
     plt.show()
+    logging.info("Plotted world map.")
 
     # Plot on UK map
     plt.figure(figsize=(12, 6))
@@ -40,5 +52,6 @@ def analyze_geospatial(geospatial_data):
     ax.add_feature(cf.BORDERS)
     for lon, lat in original_points:
         plt.plot(lon, lat, 'o', markersize=5, transform=ccrs.Geodetic())
-    plt.title('UK Map with Geospatial Data Points')
+    ax.set_title('UK Map with Geospatial Data Points')
     plt.show()
+    logging.info("Plotted UK map.")

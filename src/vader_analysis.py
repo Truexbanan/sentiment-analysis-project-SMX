@@ -86,23 +86,6 @@ def vader_label_sentiment(sentiment):
     else:
         return "Neutral"
 
-def count_sentiments(data):
-    """
-    Count the number of each sentiment type in the data.
-
-    @param data: A list of [index, text, sentiment] pairs.
-    @ret: A dictionary with counts of each sentiment type.
-    """
-    sentiment_counts = {}
-
-    for _, _, sentiment in data:
-        if sentiment in sentiment_counts:
-            sentiment_counts[sentiment] += 1
-        else:
-            sentiment_counts[sentiment] = 1
-
-    return sentiment_counts
-
 def vader_analyze_batch(data):
     """
     Analyze sentiments for a batch of data items.

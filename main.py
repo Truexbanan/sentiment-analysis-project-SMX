@@ -1,92 +1,49 @@
 import logging
-from utils.database import (
-    initialize_database_and_tables,
-    fetch_prime_minister_data,
-    fetch_geospatial_data_from_database,
-    insert_prime_minister_content,
-    insert_prime_minister_processed_content,
-    insert_results_to_database,
-    close_connection_to_database
-)
-from src.normalization import preprocess_data
-from src.sentiment_analysis import count_sentiments, vader_analyze_batch
-from src.data_visualization import visualize_sentiment, print_sentiment_analysis
-from src.roberta_process_data import roberta_analyze_data
+from utils.database import initialize_database_and_tables, close_connection_to_database
 from src.geospatial_analysis import analyze_geospatial
-
+from src.sentiment_pipeline import prompt_model_selection, preprocess_and_store_data
+from src.pipeline_helpers import fetch_prime_minister_and_geospatial_data, perform_selected_sentiment_analysis
 import time
 
-logging.basicConfig(level=logging.ERROR, format='[%(asctime)s] [%(levelname)s] %(message)s')
+logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(message)s')
 
 def main():
     """
-    Main function to connect and fetch data from the database, preprocess it, analyze its sentiment,
-    and store the results. Geospatial analysis is also performed.
+    Main function to connect to the database, fetch data, preprocess it, analyze its sentiment,
+    and store the results. Also performs geospatial analysis.
 
     @param: None.
     @ret: None.
     """
     start_time = time.time()
-    # Connect to the database and create tables
-    conn, cursor = initialize_database_and_tables()
-    print(f"Database initialized in {time.time() - start_time:.2f} seconds.")
+    try:
+        # Connect to the database and create tables
+        conn, cursor = initialize_database_and_tables()
 
-    # Fetch data from the database
-    fetch_start_time = time.time()
-    data = fetch_prime_minister_data(cursor)
-    insert_prime_minister_content(cursor, data)
-    geospatial_data = fetch_geospatial_data_from_database(cursor)
-    if data.size == 0:
+        # Fetch data from the database
+        prime_minister_data, geospatial_data = fetch_prime_minister_and_geospatial_data(cursor)
+        if prime_minister_data.size == 0:
+            return  # Exit if data is None
+
+        # Preprocess and store the fetched data
+        processed_data = preprocess_and_store_data(cursor, prime_minister_data)
+
+        # Perform sentiment analysis
+        model = prompt_model_selection()
+        perform_selected_sentiment_analysis(model, cursor, processed_data, prime_minister_data)
+
+        # Perform geospatial analysis
+        if model != 'q': # Don't perform if user Quit program
+            analyze_geospatial(geospatial_data)
+
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
+    finally:
+        # Commit changes and close the connection to the database
         close_connection_to_database(conn, cursor)
-        print(f"Total execution time: {time.time() - start_time:.2f} seconds.")
-        return  # Exit if data is None
-    print(f"Fetched data in {time.time() - fetch_start_time:.2f} seconds.")
 
-    # Preprocess data
-    preprocess_start_time = time.time()
-    processed_data = preprocess_data(data)
-    insert_prime_minister_processed_content(cursor, processed_data)
-    print(f"Data preprocessed in {time.time() - preprocess_start_time:.2f} seconds.")
-
-    """ SENTIMENT ANALYSIS """
-    # Analyze sentiment of preprocessed data
-    vader_sentiment_analysis_start_time = time.time()
-    vader_results = vader_analyze_batch(processed_data)
-    print(f"VADER Sentiment analysis done in {time.time() - vader_sentiment_analysis_start_time:.2f} seconds.")
-
-    # Analyze sentiment of raw data using RoBERTa in batches
-    roberta_sentiment_analysis_start_time = time.time()
-    batch_size = 200  # Adjust batch size according to your memory capacity
-    roberta_results = []
-    for i in range(0, len(data), batch_size):
-        batch = data[i:i+batch_size]
-        roberta_results.extend(roberta_analyze_data(batch))
-
-    print(f"roBERTa Sentiment analysis done in {time.time() - roberta_sentiment_analysis_start_time:.2f} seconds.")
-
-    # Count sentiments for VADER
-    vader_sentiment_counts = count_sentiments(vader_results)
-
-    # Insert the results into the database
-    insert_start_time = time.time()
-    insert_results_to_database(cursor, vader_results, roberta_results, geospatial_data)
-    print(f"Data inserted into the database in {time.time() - insert_start_time:.2f} seconds.")
-
-    # Print the sentiment counts for VADER
-    print_sentiment_analysis(vader_sentiment_counts)
-
-    # Visualize sentiments in a pie chart for VADER results
-    visualize_sentiment(vader_results)
-
-    """ GEOSPATIAL ANALYSIS """
-    # Analyze geospatial data
-    geospatial_analysis_start_time = time.time()
-    analyze_geospatial(geospatial_data)
-    print(f"Geospatial analysis done in {time.time() - geospatial_analysis_start_time:.2f} seconds.")
-
-    # Commit changes and close the connection to the database
-    close_connection_to_database(conn, cursor)
-    print(f"Total execution time: {time.time() - start_time:.2f} seconds.")
+    total_time = time.time() - start_time
+    logging.info(f"Total execution time: {total_time // 60} minutes and {total_time % 60:.2f} seconds.")
 
 if __name__ == '__main__':
     main()

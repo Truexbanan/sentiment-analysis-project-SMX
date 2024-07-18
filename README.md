@@ -6,9 +6,10 @@
 3. [AWS Configuration](#aws-configuration)
 4. [Running the Program](#running-the-program)
 5. [Usage](#usage)
-6. [Results](#results)
-7. [Authors and Acknowledgment](#authors-and-acknowledgment)
-8. [License](#license)
+6. [Extending the Project](#extending-the-project)
+7. [Results](#results)
+8. [Authors and Acknowledgment](#authors-and-acknowledgment)
+9. [License](#license)
 
 ## Overview
 
@@ -126,7 +127,7 @@ To use the AWS Translate service, you need to configure your AWS credentials. Fo
 
 ## Running the Program 
 
-1. Ensure that you have an `.env` file, containing the database parameters. If you do not permit access, you will be unable to run this program. This file needs to be located outside of the sentiment-analysis-project directory.
+1. Ensure that you have an `.env` file, containing the database parameters. If you do not permit access, you will be unable to connect to the database and run this program. This file needs to be located outside of the sentiment-analysis-project directory.
 
 2. Run the `main.py` file in the project directory.
 
@@ -142,52 +143,111 @@ To use the AWS Translate service, you need to configure your AWS credentials. Fo
 
 ## Usage
 
-After running the program, a connection to the PostgreSQL database will be established, and the contents of the social media posts will be retrieved. The program will then preprocess the posts, analyze their sentiment, and update the database with the results.
+After running the program, a connection to the PostgreSQL database will be established, and the contents of the social media posts will be retrieved. The program will then preprocess the posts, analyze their sentiment, and update the database with the results. It will also run geospatial analysis using the coordinates of the posts.
 
-1. **Console Output**: A table will be printed in the console displaying the count for the respective sentiment categories (Positive, Negative, or Neutral) for each sentiment analysis tool.
-2. **Database Updates**: A new table will be created with the following columns:
-   - `content_id`: The index of the processed content.
-   - `content`: The processed content.
-   - `vader_sentiment`: The sentiment identified using VADER sentiment analysis.
-   - `roberta_sentiment`: The sentiment identified using roBERTa sentiment analysis.
+1. **Console Output**:
+   - A sentiment analysis model selector prompt will appear in the terminal. The user can input a value corresponding to their chosen model:
+      - `1`: VADER
+      - `2`: Hugging Face's roBERTa
+      - Any other key: Run all models
+   - The user can also exit the program by entering `q`.
+2. **Database Updates**:
+   - **Sentiment Analysis**:
+      - If a results table for the selected model does not exist, a new table will be created with the following structure:
+         - **Raw Data Models**:
+            - `uk_prime_minister_content_id`: The index of the content.
+            - `sentiment`: The sentiment identified using the specified model's sentiment analysis.
+         - **Processed Data Models**:
+            - `uk_prime_minister_content_processed_id`: The index of the processed content.
+            - `sentiment`: The sentiment identified using the specified model's sentiment analysis.
+      - The sentiment analysis results will be stored in the respective table.
 
-The program is designed to be easily extendable. Other sentiment analysis tools can be added by following these steps:
-
-   1.	Implement the new sentiment analysis tool: Write a function to analyze sentiment using the new tool.
-   2.	Update the database schema to include a new column for the new tool’s results.
-   3.	Analyze data using the new tool and insert results into the database.
+   - **Geospatial Analysis**:
+      - If a table for geospatial analysis does not exist, a new table will be created to store relevant information for analysis.
+      - The program will plot the geospatial data on both a world map and a UK map using the coordinates of the posts. These plots will appear after sentiment analysis.
 
 ### Example
 
-Below is an example of what the updated database would look like:
+Below is an example of what a model's table would look like:
 
-| content_id | content                                                                                 |  vader_sentiment  | roberta_sentiment |
-|------------|-----------------------------------------------------------------------------------------|-------------------|-------------------|
-| 1          | That wasn't a good movie. I found it quite boring, and there wasn't much action.        |      Negative     |      Negative     |
-| 2          | Sam went shopping with her mom. They saw their Uncle Joey picking up flowers.           |      Neutral      |      Neutral      |
-| 3          | The vibrant flowers and the cheerful songs of the birds create a delightful atmosphere. |      Positive     |      Positive     |
+| content_id |   sentiment  |
+|------------|--------------|
+| 1          |   Negative   |
+| 2          |   Neutral    |
+| 3          |   Positive   |
+| 4          |   Positive   |
+
+## Extending the Project
+
+The program is designed to be easily extendable. If you want to add new features or analysis methods, you can follow the patterns established in the current codebase.
+
+### Adding New Tables
+
+To add a new table, follow the pattern used in the `create_tables.py` file. For example, to create a new table for storing additional metadata:
+
+```python
+def create_metadata_table(cursor):
+   create_table_query = """
+   CREATE TABLE IF NOT EXISTS uk_prime_minister_metadata (
+      uk_prime_minister_content_processed_id INT PRIMARY KEY,
+      sentiment TEXT,
+      FOREIGN KEY (uk_prime_minister_content_processed_id) REFERENCES uk_prime_minister_content_processed(uk_prime_minister_content_id)
+   );
+   """
+   cursor.execute(create_table_query)
+```
+
+### Inserting Data into New Tables
+
+To insert data into the new table, follow the pattern used in the `insert_data.py` file. For example, to insert data into the new metadata table:
+
+```py
+def insert_metadata(cursor, data):
+   insert_query = """
+      INSERT INTO uk_prime_minister_metadata (uk_prime_minister_content_processed_id, sentiment)
+      VALUES (%s, %s)
+      ON CONFLICT (uk_prime_minister_content_processed_id) DO UPDATE SET
+      sentiment = EXCLUDED.sentiment
+   """
+   cursor.executemany(insert_query, data)
+```
+
+### Updating the Model Selection Process
+
+To allow for the selection of the newly added model, update `sentiment_pipeline.py` and `pipeline_helpers.py`:
+
+   1.	Update `sentiment_pipeline.py`: Modify the pipeline to include the new model choice and integrate its functionality.
+	2.	Update `pipeline_helpers.py`: Extend the perform_selected_sentiment_analysis function to handle the new model choice and execute the appropriate analysis.
+
+By following these steps, you can seamlessly extend the project to include new tables, insert data into them, and integrate additional sentiment analysis models.
 
 ## Results
 
-Regarding results, we are still analyzing our findings. This section will be updated accordingly.
+Upon analyzing social media posts related to United Kingdom's Prime Minister Rishi Sunak, the sentiment analysis models revealed significantly differing results. These results can be compared to the corresponding sentiments provided by CobWebs.
+
+- **CobWebs Sentiment Analysis:**
+  - Positive: 56.98%
+  - Negative: 16.17%
+  - Neutral: 26.86%
 
 - **VADER Sentiment Analysis:**
-  - Positive: X%
-  - Negative: Y%
-  - Neutral: Z%
+  - Positive: 37.06%
+  - Negative: 39.83%
+  - Neutral: 23.12%
 
 - **roBERTa Sentiment Analysis:**
-  - Positive: A%
-  - Negative: B%
-  - Neutral: C%
+  - Positive: 0.09%
+  - Negative: 16.50%
+  - Neutral: 74.16%
 
 ## Authors and Acknowledgment
 
 This project was led by Charles Wirks and served as Kelly Ton and Banan Truex's Data and Software Engineering Internship Capstone Project for Summer 2024. We would like to express our gratitude to:
 
-  - Charles Wirks, for his guidance and leadership throughout the project.
-  - SMX, for providing the resources and support necessary to complete this project.
-  - Our mentors and colleagues, for their valuable feedback and assistance.
+  - **Charles Wirks**, for his guidance and leadership throughout the project.
+  - **Timothy Epping and Corey Lapeyrouse**, for their invaluable feedback, technical insights, and assistance.
+  - **SMX**, for providing the resources and support necessary to complete this project.
+  - **Mentors and Colleagues**, for their ongoing assistance and support.
 
 ## License
 
