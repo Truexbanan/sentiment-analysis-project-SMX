@@ -33,7 +33,8 @@ def main():
         perform_selected_sentiment_analysis(model, cursor, processed_data, prime_minister_data)
 
         # Perform geospatial analysis
-        analyze_geospatial(geospatial_data)
+        if model != 'q': # Don't perform if user Quit program
+            analyze_geospatial(geospatial_data)
 
     except Exception as e:
         logging.error(f"An error occurred: {e}")
