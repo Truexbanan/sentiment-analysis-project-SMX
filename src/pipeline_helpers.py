@@ -27,7 +27,9 @@ def perform_selected_sentiment_analysis(model, cursor, processed_data, raw_data)
     @param raw_data: The raw data.
     @ret: None.
     """
-    if model == 1:
+    if model == 'q':
+        return
+    elif model == 1:
         vader_sentiment_analysis(cursor, processed_data)
     elif model == 2:
         roberta_sentiment_analysis(cursor, raw_data)
