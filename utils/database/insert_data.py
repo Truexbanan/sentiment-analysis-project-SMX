@@ -30,20 +30,6 @@ def insert_prime_minister_processed_content(cursor, data):
     """
     cursor.executemany(insert_query, data)
 
-def insert_results_to_database(cursor, vader_data, roberta_data, geospatial_data):
-    """
-    Insert all results to the database to their respective tables.
-
-    @param cursor: A cursor object to execute database commands.
-    @param vader_data: A list of lists containing the VADER results.
-    @param roberta_data: A list of lists containing the roBERTa results.
-    @param geospatial_data: A list of lists containing the geospatial data.
-    @ret: None.
-    """
-    insert_vader_data_to_database(cursor, vader_data)
-    insert_roberta_data_to_database(cursor, roberta_data)
-    insert_geospatial_data_to_database(cursor, geospatial_data)
-
 def insert_geospatial_data_to_database(cursor, data):
     """
     Insert geospatial analysis results into the database.

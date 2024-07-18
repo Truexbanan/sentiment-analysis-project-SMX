@@ -9,7 +9,6 @@ from .create_tables import (
 from .insert_data import (
     insert_prime_minister_content,
     insert_prime_minister_processed_content,
-    insert_results_to_database,
     insert_geospatial_data_to_database,
     insert_vader_data_to_database,
     insert_roberta_data_to_database

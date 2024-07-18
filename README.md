@@ -126,7 +126,7 @@ To use the AWS Translate service, you need to configure your AWS credentials. Fo
 
 ## Running the Program 
 
-1. Ensure that you have an `.env` file, containing the database parameters. If you do not permit access, you will be unable to run this program. This file needs to be located outside of the sentiment-analysis-project directory.
+1. Ensure that you have an `.env` file, containing the database parameters. If you do not permit access, you will be unable to connect to the database and run this program. This file needs to be located outside of the sentiment-analysis-project directory.
 
 2. Run the `main.py` file in the project directory.
 
