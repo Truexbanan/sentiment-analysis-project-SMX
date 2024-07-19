@@ -29,6 +29,7 @@ def fetch_prime_minister_language(cursor):
 def fetch_geospatial_data_from_database(cursor):
     """
     Fetch data relevant to geospatial analysis from the uk_prime_minister table.
+    Avoid fetching data that explicitly states it's from US locations.
 
     @param: A cursor object to execute database commands.
     @ret: A NumPy array of shape (n, 4) formatted as [[id, longitude, latitude, location], ...].
@@ -36,7 +37,11 @@ def fetch_geospatial_data_from_database(cursor):
     fetch_query = """
         SELECT id, longitude, latitude, location
         FROM uk_prime_minister
-        WHERE longitude IS NOT NULL AND latitude IS NOT NULL AND location IS NOT NULL;
+        WHERE longitude IS NOT NULL 
+          AND latitude IS NOT NULL 
+          AND location IS NOT NULL 
+          AND location NOT LIKE '%US%' 
+          AND location NOT LIKE '%United States%';
     """
     cursor.execute(fetch_query)
     data = cursor.fetchall()  # This will be a list of tuples

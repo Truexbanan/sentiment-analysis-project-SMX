@@ -8,32 +8,50 @@ import logging
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(message)s')
 
-def analyze_geospatial(geospatial_data):
+def is_within_us(longitude, latitude):
     """
-    Implement geospatial analysis, plotting on a world map and UK map.
+    Check if the given longitude and latitude fall within the approximate bounds of the US.
+
+    @param longitude: The longitude of the point.
+    @param latitude: The latitude of the point.
+    @return: True if the point is within the US, otherwise False.
+    """
+    return (-125.0 <= longitude <= -66.93457) and (24.396308 <= latitude <= 49.384358)
+
+def process_geospatial_data(geospatial_data):
+    """
+    Process geospatial data, filtering out US locations and transforming coordinates.
 
     @param geospatial_data: A list of lists formatted as [[id, longitude, latitude, location], ...].
-    @ret: None.
+    @return: Two lists of tuples - one with transformed coordinates and one with original coordinates.
     """
-    # Set up a transformer for coordinate system conversion if needed
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:3857", always_xy=True)
 
-    # Convert to Shapely Points and apply coordinate transformation
     transformed_points = []
     original_points = []
+
     for data in geospatial_data:
         _, lon, lat, _ = data
         try:
             lon, lat = float(lon), float(lat)
-            point = Point(lon, lat)
-            # Transform coordinates if necessary
-            x, y = transformer.transform(point.x, point.y)
-            transformed_points.append((x, y))
-            original_points.append((lon, lat))
+            if not is_within_us(lon, lat):
+                point = Point(lon, lat)
+                x, y = transformer.transform(point.x, point.y)
+                transformed_points.append((x, y))
+                original_points.append((lon, lat))
         except ValueError as e:
             logging.error(f"Invalid data point {data}: {e}")
             continue
 
+    return transformed_points, original_points
+
+def plot_geospatial_data(original_points):
+    """
+    Plot geospatial data on world and UK maps.
+
+    @param original_points: List of tuples containing original coordinates.
+    @return: None.
+    """
     # Plot on world map
     plt.figure(figsize=(12, 6))
     ax = plt.axes(projection=ccrs.Mercator())
@@ -55,3 +73,16 @@ def analyze_geospatial(geospatial_data):
     ax.set_title('UK Map with Geospatial Data Points')
     plt.show()
     logging.info("Plotted UK map.")
+
+def analyze_geospatial(geospatial_data):
+    """
+    Analyze geospatial data by processing and plotting it.
+
+    @param geospatial_data: A list of lists formatted as [[id, longitude, latitude, location], ...].
+    @return: None.
+    """
+    # Process the data
+    transformed_points, original_points = process_geospatial_data(geospatial_data)
+
+    # Plot the data
+    plot_geospatial_data(original_points)
