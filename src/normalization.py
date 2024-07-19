@@ -4,6 +4,7 @@ import re # Regex library
 import logging
 import numpy as np
 import concurrent.futures
+from .language_codes import language_mapping
 
 def load_spacy_model(model_name):
     """
@@ -28,36 +29,38 @@ translate_client = boto3.client('translate', region_name='us-east-1')
 translation_cache = {}
 preprocess_cache = {}
 
-def translate_text(text):
+def translate_text(text, language):
     """
     Translate text to English using Amazon Translate.
     
     @param text: The text to translate.
+    @param language: The source language code.
     @ret: The translated text.
     """
-    # Check if the text is already in the cache
-    if text in translation_cache:
-        return translation_cache[text]
+    # Check if the text and language pair is already in the cache
+    if (text, language) in translation_cache:
+        return translation_cache[(text, language)]
     
     try:
         response = translate_client.translate_text(
             Text=text,
-            SourceLanguageCode='auto',
+            SourceLanguageCode=language if language != None else 'auto',
             TargetLanguageCode='en'
         )
         # Store the translated text in the cache
         translation = response['TranslatedText']
-        translation_cache[text] = translation
+        translation_cache[(text, language)] = translation
         return translation
     except Exception as e:
         return text  # If translation fails, use original text
 
-def tokenize_text(text):
+def tokenize_text(text, language):
     """
     Tokenize the text by removing mentions, hashtags, URLs, and extra spaces,
     translating the text, and lemmatizing non-stop words and non-punctuation tokens.
 
     @param text: The text to tokenize.
+    @param language: The language code for translation.
     @ret: A list of tokens
     """
     # Remove user tags or mentions
@@ -71,37 +74,54 @@ def tokenize_text(text):
     # Remove extra spaces
     text = ' '.join(text.split())
 
-    translated_text = translate_text(text)
+    translated_text = translate_text(text, language)
     doc = nlp(translated_text)
     # Create list of lemmatized tokens, excluding stop words and punctuation
     return [token.lemma_ for token in doc if (not token.is_stop or token.dep_ == 'neg') and not token.is_punct]
 
-def preprocess_text(text):
+def preprocess_text(text, language):
     """
     Preprocess the text by tokenizing, normalizing, and joining tokens into a single string.
     
     @param text: The text to preprocess.
+    @param language: The language code for translation.
     @ret: The preprocessed text.
     """
-    tokens = tokenize_text(text)
+    tokens = tokenize_text(text, language)
     return " ".join(tokens) # Join list of tokens back into a single string
 
-def process_entry(entry):
+def create_id_to_index_mapping(language_data):
+    """
+    Create a mapping from IDs to indices in the language_data array.
+    
+    @param language_data: A NumPy array of [id, language] pairs.
+    @ret: A dictionary mapping IDs to indices.
+    """
+    return {id_: idx for idx, (id_, _) in enumerate(language_data)}
+
+def process_entry(entry, id_to_index, language_data):
     """
     Process a single entry by preprocessing the text.
     
     @param entry: A tuple containing the index and text.
+    @param id_to_index: A dictionary mapping IDs to indices in language_data.
+    @param language_data: A NumPy array of [id, language] pairs.
     @ret: A tuple containing the index and preprocessed text.
     """
-    index, text = entry
-    processed_text = preprocess_text(text)
-    return index, processed_text
+    id_, text = entry
+    index = id_to_index.get(id_)  # Retrieve index using the ID
 
-def preprocess_data(data):
+    language_name = language_data[int(index), 1]  # Extract the language name
+    language_code = language_mapping.get(language_name)  # Get the language code
+    processed_text = preprocess_text(text, language_code)
+    return id_, processed_text
+
+def preprocess_data(data, language_data):
     """
     Preprocess a list of data items using parallel processing.
     
     @param data: A NumPy array of [id, text] pairs.
+    @param language_data: A NumPy array of [id, language] pairs.
     @ret: A NumPy array of unique [id, preprocessed_text] pairs.
     """
     unique_processed_texts = set()
@@ -110,23 +130,28 @@ def preprocess_data(data):
     # Convert to NumPy array if not already
     if not isinstance(data, np.ndarray):
         data = np.array(data)
+    if not isinstance(language_data, np.ndarray):
+        language_data = np.array(language_data)
+
+    # Create mapping from IDs to indices in language_data
+    id_to_index = create_id_to_index_mapping(language_data)
 
     # Use ProcessPoolExecutor for parallel processing
     with concurrent.futures.ProcessPoolExecutor() as executor:
         # Submit tasks to the executor, where each task is to process an entry
-        future_to_entry = {executor.submit(process_entry, entry): entry for entry in data}
+        future_to_entry = {executor.submit(process_entry, entry, id_to_index, language_data): entry for entry in data}
         
         # Iterate over Future objects as they complete and process the result
         for future in concurrent.futures.as_completed(future_to_entry):
             # Retrieve result of the completed task
-            index, processed_text = future.result()
+            id_, processed_text = future.result()
 
             # Ensure each processed text is unique before adding it to the result
             if processed_text not in unique_processed_texts:
                 unique_processed_texts.add(processed_text)
                 preprocess_cache[processed_text] = processed_text
-                processed_data.append([index, processed_text])
+                processed_data.append([id_, processed_text])
             else:
-                processed_data.append([index, preprocess_cache[processed_text]])
+                processed_data.append([id_, preprocess_cache[processed_text]])
 
     return np.array(processed_data)

@@ -21,19 +21,21 @@ def main():
         conn, cursor = initialize_database_and_tables()
 
         # Fetch data from the database
-        prime_minister_data, geospatial_data = fetch_prime_minister_and_geospatial_data(cursor)
+        prime_minister_data, language_data, geospatial_data = fetch_prime_minister_and_geospatial_data(cursor)
         if prime_minister_data.size == 0:
             return  # Exit if data is None
 
-        # Preprocess and store the fetched data
-        processed_data = preprocess_and_store_data(cursor, prime_minister_data)
-
-        # Perform sentiment analysis
+        # Prompt model selection
         model = prompt_model_selection()
-        perform_selected_sentiment_analysis(model, cursor, processed_data, prime_minister_data)
 
-        # Perform geospatial analysis
         if model != 'q': # Don't perform if user Quit program
+            # Preprocess and store the fetched data
+            processed_data = preprocess_and_store_data(cursor, prime_minister_data, language_data)
+
+            # Perform sentiment analysis
+            perform_selected_sentiment_analysis(model, cursor, processed_data, prime_minister_data)
+
+            # Perform geospatial analysis
             analyze_geospatial(geospatial_data)
 
     except Exception as e:

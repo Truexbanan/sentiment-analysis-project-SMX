@@ -18,3 +18,6 @@ from src.sentiment_pipeline import prompt_model_selection, preprocess_and_store_
 
 # Import pipeline_helpers.py functions
 from src.pipeline_helpers import fetch_prime_minister_and_geospatial_data, perform_selected_sentiment_analysis
+
+# Import language_codes.py dictionary
+from src.language_codes import language_mapping

@@ -30,6 +30,22 @@ def insert_prime_minister_processed_content(cursor, data):
     """
     cursor.executemany(insert_query, data)
 
+def insert_prime_minister_language(cursor, data):
+    """
+    Insert language into the uk_prime_minister_language table.
+
+    @param cursor: A cursor object to execute database commands.
+    @param data: 
+    @ret: None.
+    """
+    insert_query = """
+        INSERT INTO uk_prime_minister_language (uk_prime_minister_id, language)
+        VALUES (%s, %s)
+        ON CONFLICT (uk_prime_minister_id) DO UPDATE SET
+        language = EXCLUDED.language
+    """
+    cursor.executemany(insert_query, data)
+
 def insert_geospatial_data_to_database(cursor, data):
     """
     Insert geospatial analysis results into the database.
