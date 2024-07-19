@@ -25,11 +25,13 @@ def main():
         if prime_minister_data.size == 0:
             return  # Exit if data is None
 
+        # Prompt model selection
+        model = prompt_model_selection()
+        
         # Preprocess and store the fetched data
         processed_data = preprocess_and_store_data(cursor, prime_minister_data, language_data)
 
         # Perform sentiment analysis
-        model = prompt_model_selection()
         perform_selected_sentiment_analysis(model, cursor, processed_data, prime_minister_data)
 
         # Perform geospatial analysis
