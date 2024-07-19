@@ -58,16 +58,15 @@ def vader_analyze_sentiment(text):
     positive_words = ["love", "loved", "great", "excellent", "fantastic", "wonderful"]
 
     # Fine-tune the sentiment score based on specific rules
-    text_lower = text.lower()
     for phrase, adjustment in custom_rules.items():
-        if phrase in text_lower:
+        if phrase in text.lower():
             sentiment['compound'] -= vader_analyzer.polarity_scores(phrase)['compound']
             sentiment['compound'] += adjustment
     
     # If overall sentiment should be negative, adjust presence of positive words
     if sentiment['compound'] < -0.2:
         for word in positive_words:
-            if word in text_lower:
+            if word in text.lower():
                 sentiment['compound'] -= vader_analyzer.polarity_scores(word)['compound']
 
     return sentiment

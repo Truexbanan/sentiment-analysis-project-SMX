@@ -1,5 +1,6 @@
 from utils.database import (
     fetch_prime_minister_data,
+    fetch_prime_minister_language,
     fetch_geospatial_data_from_database,
     insert_prime_minister_content,
 )
@@ -10,12 +11,13 @@ def fetch_prime_minister_and_geospatial_data(cursor):
     Fetch the prime minister and geospatial data from the database.
     
     @param cursor: The database cursor.
-    @ret: Tuple of prime minister data and geospatial data.
+    @ret: Tuple of prime minister data, language data, and geospatial data.
     """
     data = fetch_prime_minister_data(cursor)
+    language = fetch_prime_minister_language(cursor)
     geospatial_data = fetch_geospatial_data_from_database(cursor)
     insert_prime_minister_content(cursor, data)
-    return data, geospatial_data
+    return data, language, geospatial_data
 
 def perform_selected_sentiment_analysis(model, cursor, processed_data, raw_data):
     """

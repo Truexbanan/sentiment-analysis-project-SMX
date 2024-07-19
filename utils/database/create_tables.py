@@ -30,6 +30,22 @@ def create_prime_minister_processed_content_table(cursor):
     """
     cursor.execute(create_table_query)
 
+def create_prime_minister_language_table(cursor):
+    """
+    Create a table that stores the post's language and id.
+
+    @param cursor: A cursor object to execute database commands.
+    @ret: None.
+    """
+    create_table_query = """
+    CREATE TABLE IF NOT EXISTS uk_prime_minister_language (
+        uk_prime_minister_id INT PRIMARY KEY,
+        language TEXT,
+        FOREIGN KEY (uk_prime_minister_id) REFERENCES uk_prime_minister(id)
+    );
+    """
+    cursor.execute(create_table_query)
+
 def create_vader_sentiment_analysis_table(cursor):
     """
     Create the vader_sentiment_analysis table if it doesn't exist.

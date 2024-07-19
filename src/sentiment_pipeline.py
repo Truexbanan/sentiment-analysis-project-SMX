@@ -33,15 +33,16 @@ def prompt_model_selection():
     else:
         return 'all'
 
-def preprocess_and_store_data(cursor, data):
+def preprocess_and_store_data(cursor, data, language):
     """
     Preprocess the data and store the processed data in the database.
 
     @param cursor: The database cursor.
     @param data: The raw data to preprocess.
+    @param language: A NumPy array of [id, language] pairs used for language lookup.
     @ret: The processed data.
     """
-    processed_data = preprocess_data(data)
+    processed_data = preprocess_data(data, language)
     insert_prime_minister_processed_content(cursor, processed_data)
     return processed_data
 

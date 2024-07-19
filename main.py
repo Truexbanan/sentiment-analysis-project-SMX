@@ -21,12 +21,12 @@ def main():
         conn, cursor = initialize_database_and_tables()
 
         # Fetch data from the database
-        prime_minister_data, geospatial_data = fetch_prime_minister_and_geospatial_data(cursor)
+        prime_minister_data, language_data, geospatial_data = fetch_prime_minister_and_geospatial_data(cursor)
         if prime_minister_data.size == 0:
             return  # Exit if data is None
 
         # Preprocess and store the fetched data
-        processed_data = preprocess_and_store_data(cursor, prime_minister_data)
+        processed_data = preprocess_and_store_data(cursor, prime_minister_data, language_data)
 
         # Perform sentiment analysis
         model = prompt_model_selection()
