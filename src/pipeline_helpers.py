@@ -5,18 +5,31 @@ from utils.database import (
     insert_prime_minister_content,
 )
 from src.sentiment_pipeline import vader_sentiment_analysis, roberta_sentiment_analysis, analyze_all_models
+from utils.database.insert_data import insert_geospatial_data_to_database
+import logging
+
+logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(message)s')
 
 def fetch_prime_minister_and_geospatial_data(cursor):
     """
     Fetch the prime minister and geospatial data from the database.
     
     @param cursor: The database cursor.
-    @ret: Tuple of prime minister data, language data, and geospatial data.
+    @return: Tuple of prime minister data, language data, and geospatial data.
     """
-    data = fetch_prime_minister_data(cursor)
-    language = fetch_prime_minister_language(cursor)
-    geospatial_data = fetch_geospatial_data_from_database(cursor)
-    insert_prime_minister_content(cursor, data)
+    try:
+        data = fetch_prime_minister_data(cursor)
+        language = fetch_prime_minister_language(cursor)
+        geospatial_data = fetch_geospatial_data_from_database(cursor)
+        
+        # Insert data into the database
+        insert_geospatial_data_to_database(cursor, geospatial_data)
+        insert_prime_minister_content(cursor, data)
+        
+    except Exception as e:
+        logging.error(f"An error occurred while fetching and inserting data: {e}")
+        raise  # Re-raise the exception after logging
+
     return data, language, geospatial_data
 
 def perform_selected_sentiment_analysis(model, cursor, processed_data, raw_data):

@@ -52,6 +52,13 @@ def plot_geospatial_data(original_points):
     @param original_points: List of tuples containing original coordinates.
     @return: None.
     """
+    # Color mapping based on sentiment
+    color_map = {
+        'negative': 'red',
+        'positive': 'green',
+        'neutral': 'yellow'
+    }
+
     # Plot on world map
     plt.figure(figsize=(12, 6))
     ax = plt.axes(projection=ccrs.Mercator())
