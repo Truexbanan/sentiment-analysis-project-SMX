@@ -27,15 +27,15 @@ def main():
 
         # Prompt model selection
         model = prompt_model_selection()
-        
-        # Preprocess and store the fetched data
-        processed_data = preprocess_and_store_data(cursor, prime_minister_data, language_data)
 
-        # Perform sentiment analysis
-        perform_selected_sentiment_analysis(model, cursor, processed_data, prime_minister_data)
-
-        # Perform geospatial analysis
         if model != 'q': # Don't perform if user Quit program
+            # Preprocess and store the fetched data
+            processed_data = preprocess_and_store_data(cursor, prime_minister_data, language_data)
+
+            # Perform sentiment analysis
+            perform_selected_sentiment_analysis(model, cursor, processed_data, prime_minister_data)
+
+            # Perform geospatial analysis
             analyze_geospatial(geospatial_data)
 
     except Exception as e:
