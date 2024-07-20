@@ -1,12 +1,3 @@
-"""
-sentiment_pipeline.py
-
-This module manages the sentiment analysis pipeline for the sentiment analysis project. 
-It includes functions for prompting the user to select a sentiment analysis model, 
-preprocessing data, and performing sentiment analysis using VADER and roBERTa models. 
-The results of the analysis are then stored in the database.
-"""
-
 from src.vader_analysis import vader_analyze_batch
 from src.roberta_process_data import roberta_analyze_data
 from utils.database.insert_data import insert_processed_content_data, insert_vader_sentiment_data, insert_roberta_sentiment_data
@@ -33,10 +24,11 @@ def vader_sentiment_analysis(cursor, processed_data, table_name):
     @param cursor: The database cursor.
     @param processed_data (np.ndarray): The processed data to analyze.
     @param table_name (str): The name of the table where the results should be stored.
-    @ret: None.
+    @ret (np.ndarray): The VADER sentiment analysis results.
     """
     vader_results = vader_analyze_batch(processed_data)
     insert_vader_sentiment_data(cursor, vader_results, table_name)
+    return vader_results
 
 def roberta_sentiment_analysis(cursor, data, table_name):
     """
@@ -45,7 +37,7 @@ def roberta_sentiment_analysis(cursor, data, table_name):
     @param cursor: The database cursor.
     @param data (np.ndarray): The data to analyze.
     @param table_name (str): The name of the table where the results should be stored.
-    @ret: None
+    @ret (list of lists): The roBERTa sentiment analysis results.
     """
     batch_size = 200  # Adjust batch size according to your memory capacity
     roberta_results = []
@@ -53,6 +45,7 @@ def roberta_sentiment_analysis(cursor, data, table_name):
         batch = data[i:i+batch_size]
         roberta_results.extend(roberta_analyze_data(batch))
     insert_roberta_sentiment_data(cursor, roberta_results, table_name)
+    return roberta_results
 
 def analyze_all_models(cursor, processed_data, data, table_name):
     """
@@ -62,10 +55,13 @@ def analyze_all_models(cursor, processed_data, data, table_name):
     @param processed_data (np.ndarray): The preprocessed data for VADER analysis.
     @param data (np.ndarray): The raw data for roBERTa analysis.
     @param table_name (str): The name of the table where the results should be stored.
-    @ret: None
+    @ret: A tuple containing:
+        - (np.ndarray): VADER sentiment analysis results.
+        - (list of lists): roBERTa sentiment analysis results.
     """
-    vader_sentiment_analysis(cursor, processed_data, table_name)
-    roberta_sentiment_analysis(cursor, data, table_name)
+    vader_results = vader_sentiment_analysis(cursor, processed_data, table_name)
+    roberta_results = roberta_sentiment_analysis(cursor, data, table_name)
+    return vader_results, roberta_results
 
 def prompt_model_selection():
     """
@@ -98,13 +94,18 @@ def perform_selected_sentiment_analysis(model, cursor, processed_data, raw_data,
     @param processed_data (np.ndarray): The preprocessed data.
     @param raw_data (np.ndarray): The raw data.
     @param table_name (str): The name of the table.
-    @ret: None.
+    @ret: A list of tuples, each containing:
+        - (np.ndarray or list of dict): The sentiment analysis results.
+        - (str): The name of the sentiment analysis model ('VADER' or 'roBERTa').
     """
     if model == 'q':
-        return
+        return []
     elif model == 1:
-        vader_sentiment_analysis(cursor, processed_data, table_name)
+        vader_results = vader_sentiment_analysis(cursor, processed_data, table_name)
+        return [(vader_results, 'VADER')]
     elif model == 2:
-        roberta_sentiment_analysis(cursor, raw_data, table_name)
+        roberta_results = roberta_sentiment_analysis(cursor, raw_data, table_name)
+        return [(roberta_results, 'roBERTa')]
     else:
-        analyze_all_models(cursor, processed_data, raw_data, table_name)
+        vader_results, roberta_results = analyze_all_models(cursor, processed_data, raw_data, table_name)
+        return [(vader_results, 'VADER'), (roberta_results, 'roBERTa')]

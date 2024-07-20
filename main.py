@@ -32,10 +32,11 @@ def main():
         processed_data = preprocess_and_store_data(cursor, prime_minister_data, language_data, table_name)
 
         # Perform sentiment analysis
-        perform_selected_sentiment_analysis(model, cursor, processed_data, prime_minister_data, table_name)
+        results = perform_selected_sentiment_analysis(model, cursor, processed_data, prime_minister_data, table_name)
 
-        # Perform geospatial analysis
-        analyze_geospatial(geospatial_data)
+        for sentiment_results, model_name in results:
+            # Perform geospatial analysis
+            analyze_geospatial(geospatial_data, sentiment_results, model_name)
 
     except Exception as e:
         logging.error(f"An error occurred: {e}")

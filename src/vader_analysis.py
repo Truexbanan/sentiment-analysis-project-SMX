@@ -94,7 +94,7 @@ def vader_analyze_batch(data):
     Analyze sentiments for a batch of data items.
 
     @param data (np.ndarray): A NumPy array of [index, text] pairs.
-    @ret (np.ndarray): A NumPy array of [index, text, sentiment_label] pairs.
+    @ret (np.ndarray): A NumPy array of [index, text, sentiment_label].
     """
     # Convert to NumPy array if not already
     if not isinstance(data, np.ndarray):
