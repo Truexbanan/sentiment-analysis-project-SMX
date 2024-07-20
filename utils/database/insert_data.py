@@ -1,9 +1,9 @@
 def insert_prime_minister_content(cursor, data, table_name):
     """
-    Insert fetched content into the uk_prime_minister_content table.
+    Insert fetched content into the specified content table.
 
-    @param cursor: A cursor object to execute database commands.
-    @param data: A list of lists containing the content data to be inserted.
+    @param cursor (object): A cursor object to execute database commands.
+    @param data (list of lists): A list of lists containing the content data to be inserted. Each list should be in the format [id, content].
     @ret: None.
     """
     insert_query = f"""
@@ -16,10 +16,10 @@ def insert_prime_minister_content(cursor, data, table_name):
 
 def insert_prime_minister_processed_content(cursor, data, table_name):
     """
-    Insert processed content into the uk_prime_minister_content_processed table.
+    Insert processed content into the specified processed content table.
 
-    @param cursor: A cursor object to execute database commands.
-    @param data: A list of lists containing the processed content data to be inserted.
+    @param cursor (object): A cursor object to execute database commands.
+    @param data (list of lists): A list of lists containing the processed content data to be inserted. Each list should be in the format [content_id, processed_content].
     @ret: None.
     """
     insert_query = f"""
@@ -32,10 +32,10 @@ def insert_prime_minister_processed_content(cursor, data, table_name):
 
 def insert_prime_minister_language(cursor, data, table_name):
     """
-    Insert language into the uk_prime_minister_language table.
+    Insert language data into the specified language table.
 
-    @param cursor: A cursor object to execute database commands.
-    @param data: 
+    @param cursor (object): A cursor object to execute database commands.
+    @param data (list of lists): A list of lists containing the language data to be inserted. Each list should be in the format [id, language].
     @ret: None.
     """
     insert_query = f"""
@@ -48,10 +48,10 @@ def insert_prime_minister_language(cursor, data, table_name):
 
 def insert_geospatial_data_to_database(cursor, data, table_name):
     """
-    Insert geospatial analysis results into the database.
+    Insert geospatial analysis results into the specified geospatial table.
 
-    @param cursor: A cursor object to execute database commands.
-    @param data: A list of lists containing the geospatial data [uk_prime_minister_content_id, longitude, latitude, location].
+    @param cursor (object): A cursor object to execute database commands.
+    @param data (list of lists): A list of lists containing the geospatial data to be inserted. Each list should be in the format [content_id, longitude, latitude, location].
     @ret: None.
     """
     insert_query = f"""
@@ -66,10 +66,10 @@ def insert_geospatial_data_to_database(cursor, data, table_name):
 
 def insert_vader_data_to_database(cursor, data, table_name):
     """
-    Insert sentiment analysis results into the database.
+    Insert VADER sentiment analysis results into the specified VADER sentiment table.
 
-    @param cursor: A cursor object to execute database commands.
-    @param data: A list of lists containing the sentiment analysis results using VADER.
+    @param cursor (object): A cursor object to execute database commands.
+    @param data (list of lists): A list of lists containing the VADER sentiment analysis results. Each list should be in the format [content_processed_id, _, sentiment].
     @ret: None.
     """
     insert_query = f"""
@@ -84,10 +84,10 @@ def insert_vader_data_to_database(cursor, data, table_name):
 
 def insert_roberta_data_to_database(cursor, data, table_name):
     """
-    Insert sentiment analysis results into the database.
+    Insert roBERTa sentiment analysis results into the specified roBERTa sentiment table.
 
-    @param cursor: A cursor object to execute database commands.
-    @param data: A list of lists containing the sentiment analysis results using roBERTa.
+    @param cursor (object): A cursor object to execute database commands.
+    @param data (list of lists): A list of lists containing the roBERTa sentiment analysis results. Each list should be in the format [content_id, _, sentiment].
     @ret: None.
     """
     insert_query = f"""

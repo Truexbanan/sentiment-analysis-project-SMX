@@ -10,14 +10,16 @@ def load_spacy_model(model_name):
     """
     Load a spaCy model.
     
-    @param model_name: The name of the spaCy model to load.
-    @ret: The loaded spaCy model.
+    @param model_name (str): The name of the spaCy model to load.
+    @ret (spacy.language.Language): The loaded spaCy model.
+    
+    @raises RuntimeError: If the model cannot be loaded.
     """
     try:
         return spacy.load(model_name)
     except IOError as e:
         logging.error(f"Error loading spaCy model: {e}")
-        return None
+        raise RuntimeError(f"Failed to load spaCy model '{model_name}'")
 
 # Load the spaCy model once
 nlp = load_spacy_model("en_core_web_lg")
@@ -33,9 +35,9 @@ def translate_text(text, language):
     """
     Translate text to English using Amazon Translate.
     
-    @param text: The text to translate.
-    @param language: The source language code.
-    @ret: The translated text.
+    @param text (str): The text to translate.
+    @param language (str): The source language code.
+    @ret (str): The translated text.
     """
     # Check if the text and language pair is already in the cache
     if (text, language) in translation_cache:
@@ -59,9 +61,9 @@ def tokenize_text(text, language):
     Tokenize the text by removing mentions, hashtags, URLs, and extra spaces,
     translating the text, and lemmatizing non-stop words and non-punctuation tokens.
 
-    @param text: The text to tokenize.
-    @param language: The language code for translation.
-    @ret: A list of tokens
+    @param text (str): The text to tokenize.
+    @param language (str): The language code for translation.
+    @ret (list of str): A list of tokens.
     """
     # Remove user tags or mentions
     text = re.sub(r'@\w+', '', text)
@@ -83,9 +85,9 @@ def preprocess_text(text, language):
     """
     Preprocess the text by tokenizing, normalizing, and joining tokens into a single string.
     
-    @param text: The text to preprocess.
-    @param language: The language code for translation.
-    @ret: The preprocessed text.
+    @param text (str): The text to preprocess.
+    @param language (str): The language code for translation.
+    @ret (str): The preprocessed text.
     """
     tokens = tokenize_text(text, language)
     return " ".join(tokens) # Join list of tokens back into a single string
@@ -94,8 +96,8 @@ def create_id_to_index_mapping(language_data):
     """
     Create a mapping from IDs to indices in the language_data array.
     
-    @param language_data: A NumPy array of [id, language] pairs.
-    @ret: A dictionary mapping IDs to indices.
+    @param language_data (np.ndarray): A NumPy array of [id, language] pairs.
+    @ret (dict): A dictionary mapping IDs to indices.
     """
     return {id_: idx for idx, (id_, _) in enumerate(language_data)}
 
@@ -103,13 +105,17 @@ def process_entry(entry, id_to_index, language_data):
     """
     Process a single entry by preprocessing the text.
     
-    @param entry: A tuple containing the index and text.
-    @param id_to_index: A dictionary mapping IDs to indices in language_data.
-    @param language_data: A NumPy array of [id, language] pairs.
-    @ret: A tuple containing the index and preprocessed text.
+    @param entry (tuple): A tuple containing the index and text.
+    @param id_to_index (dict): A dictionary mapping IDs to indices in language_data.
+    @param language_data (np.ndarray): A NumPy array of [id, language] pairs.
+    @ret (tuple): A tuple containing the index and preprocessed text.
     """
     id_, text = entry
     index = id_to_index.get(id_)  # Retrieve index using the ID
+
+    # Return the original text if the ID is not found in the mapping.
+    if index is None:
+        return id_, text 
 
     language_name = language_data[int(index), 1]  # Extract the language name
     language_code = language_mapping.get(language_name)  # Get the language code
@@ -120,9 +126,9 @@ def preprocess_data(data, language_data):
     """
     Preprocess a list of data items using parallel processing.
     
-    @param data: A NumPy array of [id, text] pairs.
-    @param language_data: A NumPy array of [id, language] pairs.
-    @ret: A NumPy array of unique [id, preprocessed_text] pairs.
+    @param data (np.ndarray): A NumPy array of [id, text] pairs.
+    @param language_data (np.ndarray): A NumPy array of [id, language] pairs.
+    @ret (np.ndarray): A NumPy array of unique [id, preprocessed_text] pairs.
     """
     unique_processed_texts = set()
     processed_data = []

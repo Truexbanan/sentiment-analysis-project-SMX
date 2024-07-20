@@ -12,9 +12,9 @@ def is_within_us(longitude, latitude):
     """
     Check if the given longitude and latitude fall within the approximate bounds of the US.
 
-    @param longitude: The longitude of the point.
-    @param latitude: The latitude of the point.
-    @return: True if the point is within the US, otherwise False.
+    @param longitude (float): The longitude of the point.
+    @param latitude (float): The latitude of the point.
+    @ret: True if the point is within the US, otherwise False.
     """
     return (-125.0 <= longitude <= -66.93457) and (24.396308 <= latitude <= 49.384358)
 
@@ -22,8 +22,10 @@ def process_geospatial_data(geospatial_data):
     """
     Process geospatial data, filtering out US locations and transforming coordinates.
 
-    @param geospatial_data: A list of lists formatted as [[id, longitude, latitude, location], ...].
-    @return: Two lists of tuples - one with transformed coordinates and one with original coordinates.
+    @param geospatial_data (list of list): A list of lists formatted as [[id, longitude, latitude, location], ...].
+    @ret: Two lists of tuples - 
+        - Transformed coordinates (list of tuple): Transformed coordinates excluding US locations.
+        - Original coordinates (list of tuple): Original coordinates excluding US locations.
     """
     transformer = Transformer.from_crs("EPSG:4326", "EPSG:3857", always_xy=True)
 
@@ -49,8 +51,8 @@ def plot_geospatial_data(original_points):
     """
     Plot geospatial data on world and UK maps.
 
-    @param original_points: List of tuples containing original coordinates.
-    @return: None.
+    @param original_points (list of tuple): List of tuples containing original coordinates.
+    @ret: None.
     """
     # Color mapping based on sentiment
     color_map = {
@@ -85,8 +87,8 @@ def analyze_geospatial(geospatial_data):
     """
     Analyze geospatial data by processing and plotting it.
 
-    @param geospatial_data: A list of lists formatted as [[id, longitude, latitude, location], ...].
-    @return: None.
+    @param geospatial_data (list of list): A list of lists formatted as [[id, longitude, latitude, location], ...].
+    @ret: None.
     """
     # Process the data
     transformed_points, original_points = process_geospatial_data(geospatial_data)

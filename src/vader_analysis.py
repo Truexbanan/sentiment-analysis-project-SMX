@@ -8,8 +8,12 @@ def vader_analyze_sentiment(text):
     """
     Analyze the sentiment of the text using VADER and apply custom rules.
 
-    @param text: The text to analyze.
-    @ret: A dictionary containing the sentiment scores.
+    @param text (str): The text to analyze.
+    @ret (dict): A dictionary containing the sentiment scores:
+        - 'neg' (float): Negative sentiment score.
+        - 'neu' (float): Neutral sentiment score.
+        - 'pos' (float): Positive sentiment score.
+        - 'compound' (float): Compound sentiment score.
     """
     sentiment = vader_analyzer.polarity_scores(text)
 
@@ -75,8 +79,8 @@ def vader_label_sentiment(sentiment):
     """
     Label the sentiment based on the sentiment scores.
 
-    @param sentiment: The sentiment score to label.
-    @ret: The corresponding sentiment ('Positive', 'Negative', 'Neutral')
+    @param sentiment (dict): The sentiment score to label, including 'compound' key.
+    @ret (str): The corresponding sentiment label as a string ('Positive', 'Negative', 'Neutral').
     """
     if sentiment['compound'] >= 0.05:
         return "Positive"
@@ -89,8 +93,8 @@ def vader_analyze_batch(data):
     """
     Analyze sentiments for a batch of data items.
 
-    @param data: A NumPy array of [index, text] pairs.
-    @ret: A NumPy array of [index, text, sentiment_label] pairs.
+    @param data (np.ndarray): A NumPy array of [index, text] pairs.
+    @ret (np.ndarray): A NumPy array of [index, text, sentiment_label] pairs.
     """
     # Convert to NumPy array if not already
     if not isinstance(data, np.ndarray):

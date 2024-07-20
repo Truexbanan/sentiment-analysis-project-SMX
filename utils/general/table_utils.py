@@ -7,10 +7,11 @@ def validate_table_name(cursor, table_name):
     """
     Validate the table name to prevent SQL injection.
 
-    @param cursor: A cursor object to execute database commands.
-    @param table_name: The name of the table to validate.
+    @param cursor (object): A cursor object to execute database commands.
+    @param table_name (str): The name of the table to validate.
     @ret: None.
 
+    @raises ValueError: If the table name is invalid or does not exist.
     """
     if not re.match(r'^[A-Za-z_][A-Za-z0-9_]*$', table_name):
         logging.error(f"Invalid table name: {table_name}")
@@ -25,8 +26,10 @@ def get_table_name_from_user(cursor):
     """
     Prompt the user to enter a table name and validate the input.
 
-    @param cursor: A cursor object to execute database commands.
-    @ret: Table name if valid
+    @param cursor (object): A cursor object to execute database commands.
+    @ret (str): Table name if valid.
+
+    @raises ValueError: If the table name is invalid or does not exist.
     """
     while True:
         table_name = input("Enter the table name: ").strip()
@@ -40,9 +43,9 @@ def check_table_exists(cursor, table_name):
     """
     Check if a table exists in the database.
 
-    @param cursor: A cursor object to execute database commands.
-    @param table_name: The name of the table.
-    @ret: True if the table exists, False otherwise.
+    @param cursor (object): A cursor object to execute database commands.
+    @param table_name (str): The name of the table.
+    @ret (bool): True if the table exists, False otherwise.
     """
     query = """
     SELECT EXISTS (
