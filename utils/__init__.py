@@ -25,5 +25,6 @@ from .database import (
 
 from .general import (
     validate_table_name,
-    get_table_name_from_user
+    get_table_name_from_user,
+    language_mapping
 )

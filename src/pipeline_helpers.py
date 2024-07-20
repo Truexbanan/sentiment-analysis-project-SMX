@@ -6,7 +6,6 @@ from utils.database import (
     fetch_geospatial_data,
     insert_content_data,
 )
-from src.sentiment_pipeline import vader_sentiment_analysis, roberta_sentiment_analysis, analyze_all_models
 from utils.database.insert_data import insert_language_data, insert_geospatial_data
 from utils.general.table_utils import get_table_name_from_user
 import logging
@@ -55,23 +54,3 @@ def fetch_and_store_prime_minister_and_geospatial_data(cursor, table_name):
         raise  # Re-raise the exception after logging
 
     return data, language, geospatial_data
-
-def perform_selected_sentiment_analysis(model, cursor, processed_data, raw_data, table_name):
-    """
-    Perform sentiment analysis based on the chosen model.
-
-    @param model (int or str): The chosen model number (1 for VADER, 2 for roBERTa, and anything else for all models).
-    @param cursor: The database cursor.
-    @param processed_data (np.ndarray): The preprocessed data.
-    @param raw_data (np.ndarray): The raw data.
-    @param table_name (str): The name of the table.
-    @ret: None.
-    """
-    if model == 'q':
-        return
-    elif model == 1:
-        vader_sentiment_analysis(cursor, processed_data, table_name)
-    elif model == 2:
-        roberta_sentiment_analysis(cursor, raw_data, table_name)
-    else:
-        analyze_all_models(cursor, processed_data, raw_data, table_name)

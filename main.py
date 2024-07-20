@@ -1,8 +1,8 @@
 import logging
 from utils.database import close_connection_to_database
 from src.geospatial_analysis import analyze_geospatial
-from src.sentiment_pipeline import prompt_model_selection, preprocess_and_store_data
-from src.pipeline_helpers import initialize_and_fetch_data, perform_selected_sentiment_analysis
+from src.sentiment_pipeline import prompt_model_selection, preprocess_and_store_data, perform_selected_sentiment_analysis
+from src.pipeline_helpers import initialize_and_fetch_data
 import time
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(message)s')

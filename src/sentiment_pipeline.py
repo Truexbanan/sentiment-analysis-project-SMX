@@ -9,30 +9,8 @@ The results of the analysis are then stored in the database.
 
 from src.vader_analysis import vader_analyze_batch
 from src.roberta_process_data import roberta_analyze_data
-from utils.database.insert_data import insert_processed_content_data, insert_vader_sentiment_data, insert_roberta_sentiment_data, insert_geospatial_data
+from utils.database.insert_data import insert_processed_content_data, insert_vader_sentiment_data, insert_roberta_sentiment_data
 from src.normalization import preprocess_data
-
-def prompt_model_selection():
-    """
-    Prompt the user to select a sentiment analysis model.
-
-    @param: None.
-    @ret (int or str): The chosen model number (1 for VADER, 2 for roBERTa, and anything else for all models). 'q' to quit.
-    """
-    print("""Sentiment Analysis Models:
-    1. VADER
-    2. Hugging Face's roBERTa
-    
-    Enter any other key to run all models. To quit, enter `q`
-    """)
-    user_input = input("Enter the model choice: ").strip().lower()
-
-    if user_input == 'q':
-        return 'q'
-    elif user_input in ['1', '2']:
-        return int(user_input)
-    else:
-        return 'all'
 
 def preprocess_and_store_data(cursor, data, language, table_name):
     """
@@ -88,3 +66,45 @@ def analyze_all_models(cursor, processed_data, data, table_name):
     """
     vader_sentiment_analysis(cursor, processed_data, table_name)
     roberta_sentiment_analysis(cursor, data, table_name)
+
+def prompt_model_selection():
+    """
+    Prompt the user to select a sentiment analysis model.
+
+    @param: None.
+    @ret (int or str): The chosen model number (1 for VADER, 2 for roBERTa, and anything else for all models). 'q' to quit.
+    """
+    print("""Sentiment Analysis Models:
+    1. VADER
+    2. Hugging Face's roBERTa
+    
+    Enter any other key to run all models. To quit, enter `q`
+    """)
+    user_input = input("Enter the model choice: ").strip().lower()
+
+    if user_input == 'q':
+        return 'q'
+    elif user_input in ['1', '2']:
+        return int(user_input)
+    else:
+        return 'all'
+
+def perform_selected_sentiment_analysis(model, cursor, processed_data, raw_data, table_name):
+    """
+    Perform sentiment analysis based on the chosen model.
+
+    @param model (int or str): The chosen model number (1 for VADER, 2 for roBERTa, and anything else for all models).
+    @param cursor: The database cursor.
+    @param processed_data (np.ndarray): The preprocessed data.
+    @param raw_data (np.ndarray): The raw data.
+    @param table_name (str): The name of the table.
+    @ret: None.
+    """
+    if model == 'q':
+        return
+    elif model == 1:
+        vader_sentiment_analysis(cursor, processed_data, table_name)
+    elif model == 2:
+        roberta_sentiment_analysis(cursor, raw_data, table_name)
+    else:
+        analyze_all_models(cursor, processed_data, raw_data, table_name)

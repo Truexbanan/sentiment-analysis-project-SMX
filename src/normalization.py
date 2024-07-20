@@ -4,7 +4,7 @@ import re # Regex library
 import logging
 import numpy as np
 import concurrent.futures
-from .language_codes import language_mapping
+from utils.general.language_codes import language_mapping
 
 def load_spacy_model(model_name):
     """
