@@ -17,7 +17,7 @@ from .insert_data import (
 )
 from .fetch_data import fetch_prime_minister_data, fetch_prime_minister_language, fetch_geospatial_data_from_database
 
-def initialize_database_and_tables():
+def initialize_database():
     """
     Connect to the database and create necessary tables.
 
@@ -27,10 +27,12 @@ def initialize_database_and_tables():
     """
     conn = connect_to_database()
     cursor = conn.cursor()
-    create_prime_minister_content_table(cursor)
-    create_prime_minister_processed_content_table(cursor)
-    create_prime_minister_language_table(cursor)
-    create_vader_sentiment_analysis_table(cursor)
-    create_roberta_sentiment_analysis_table(cursor)
-    create_geospatial_analysis_table(cursor)
     return conn, cursor
+
+def create_database_tables(cursor, table_name):
+    create_prime_minister_content_table(cursor, table_name)
+    create_prime_minister_processed_content_table(cursor, table_name)
+    create_prime_minister_language_table(cursor, table_name)
+    create_vader_sentiment_analysis_table(cursor, table_name)
+    create_roberta_sentiment_analysis_table(cursor, table_name)
+    create_geospatial_analysis_table(cursor, table_name)

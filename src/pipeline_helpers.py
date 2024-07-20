@@ -5,26 +5,26 @@ from utils.database import (
     insert_prime_minister_content,
 )
 from src.sentiment_pipeline import vader_sentiment_analysis, roberta_sentiment_analysis, analyze_all_models
-from utils.database.insert_data import insert_geospatial_data_to_database
+from utils.database.insert_data import insert_prime_minister_language
 import logging
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(message)s')
 
-def fetch_prime_minister_and_geospatial_data(cursor):
+def fetch_prime_minister_and_geospatial_data(cursor, table_name):
     """
     Fetch the prime minister and geospatial data from the database.
     
     @param cursor: The database cursor.
-    @return: Tuple of prime minister data, language data, and geospatial data.
+    @param table_name: The name of the table.
+    @ret: Tuple of prime minister data, language data, and geospatial data.
     """
     try:
-        data = fetch_prime_minister_data(cursor)
-        language = fetch_prime_minister_language(cursor)
-        geospatial_data = fetch_geospatial_data_from_database(cursor)
-        
-        # Insert data into the database
-        insert_geospatial_data_to_database(cursor, geospatial_data)
-        insert_prime_minister_content(cursor, data)
+        data = fetch_prime_minister_data(cursor, table_name)
+        language = fetch_prime_minister_language(cursor, table_name)
+        insert_prime_minister_language(cursor, data, table_name)
+
+        insert_prime_minister_content(cursor, data, table_name)
+        geospatial_data = fetch_geospatial_data_from_database(cursor, table_name)
         
     except Exception as e:
         logging.error(f"An error occurred while fetching and inserting data: {e}")
@@ -32,7 +32,7 @@ def fetch_prime_minister_and_geospatial_data(cursor):
 
     return data, language, geospatial_data
 
-def perform_selected_sentiment_analysis(model, cursor, processed_data, raw_data):
+def perform_selected_sentiment_analysis(model, cursor, processed_data, raw_data, table_name):
     """
     Perform sentiment analysis based on the chosen model.
 
@@ -40,13 +40,14 @@ def perform_selected_sentiment_analysis(model, cursor, processed_data, raw_data)
     @param cursor: The database cursor.
     @param processed_data: The preprocessed data.
     @param raw_data: The raw data.
+    @param table_name: The name of the table.
     @ret: None.
     """
     if model == 'q':
         return
     elif model == 1:
-        vader_sentiment_analysis(cursor, processed_data)
+        vader_sentiment_analysis(cursor, processed_data, table_name)
     elif model == 2:
-        roberta_sentiment_analysis(cursor, raw_data)
+        roberta_sentiment_analysis(cursor, raw_data, table_name)
     else:
-        analyze_all_models(cursor, processed_data, raw_data)
+        analyze_all_models(cursor, processed_data, raw_data, table_name)

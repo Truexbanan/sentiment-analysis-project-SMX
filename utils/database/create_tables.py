@@ -1,97 +1,103 @@
-def create_prime_minister_content_table(cursor):
+def create_prime_minister_content_table(cursor, table_name):
     """
     Create the social media post content table if it doesn't exist.
     
     @param cursor: A cursor object to execute database commands.
+    @param table_name: The name of the table.
     @ret: None.
     """
-    create_table_query = """
-    CREATE TABLE IF NOT EXISTS uk_prime_minister_content (
-        uk_prime_minister_id INT PRIMARY KEY,
+    create_table_query = f"""
+    CREATE TABLE IF NOT EXISTS {table_name}_content (
+        {table_name}_id INT PRIMARY KEY,
         content TEXT,
-        FOREIGN KEY (uk_prime_minister_id) REFERENCES uk_prime_minister(id)
+        FOREIGN KEY ({table_name}_id) REFERENCES {table_name}(id)
     );
     """
     cursor.execute(create_table_query)
 
-def create_prime_minister_processed_content_table(cursor):
+def create_prime_minister_processed_content_table(cursor, table_name):
     """
     Create the processed social media post content table if it doesn't exist.
     
     @param cursor: A cursor object to execute database commands.
+    @param table_name: The name of the table.
     @ret: None.
     """
-    create_table_query = """
-    CREATE TABLE IF NOT EXISTS uk_prime_minister_content_processed (
-        uk_prime_minister_content_id INT PRIMARY KEY,
+    create_table_query = f"""
+    CREATE TABLE IF NOT EXISTS {table_name}_content_processed (
+        {table_name}_content_id INT PRIMARY KEY,
         processed_content TEXT,
-        FOREIGN KEY (uk_prime_minister_content_id) REFERENCES uk_prime_minister_content(uk_prime_minister_id)
+        FOREIGN KEY ({table_name}_content_id) REFERENCES {table_name}_content({table_name}_id)
     );
     """
     cursor.execute(create_table_query)
 
-def create_prime_minister_language_table(cursor):
+def create_prime_minister_language_table(cursor, table_name):
     """
     Create a table that stores the post's language and id.
 
     @param cursor: A cursor object to execute database commands.
+    @param table_name: The name of the table.
     @ret: None.
     """
-    create_table_query = """
-    CREATE TABLE IF NOT EXISTS uk_prime_minister_language (
-        uk_prime_minister_id INT PRIMARY KEY,
+    create_table_query = f"""
+    CREATE TABLE IF NOT EXISTS {table_name}_language (
+        {table_name}_id INT PRIMARY KEY,
         language TEXT,
-        FOREIGN KEY (uk_prime_minister_id) REFERENCES uk_prime_minister(id)
+        FOREIGN KEY ({table_name}_id) REFERENCES {table_name}(id)
     );
     """
     cursor.execute(create_table_query)
 
-def create_vader_sentiment_analysis_table(cursor):
+def create_vader_sentiment_analysis_table(cursor, table_name):
     """
     Create the vader_sentiment_analysis table if it doesn't exist.
     
     @param cursor: A cursor object to execute database commands.
+    @param table_name: The name of the table.
     @ret: None.
     """
-    create_table_query = """
-    CREATE TABLE IF NOT EXISTS sentiment_analysis_vader (
-        uk_prime_minister_content_processed_id INT PRIMARY KEY,
+    create_table_query = f"""
+    CREATE TABLE IF NOT EXISTS {table_name}_sentiment_vader (
+        {table_name}_content_processed_id INT PRIMARY KEY,
         sentiment TEXT,
-        FOREIGN KEY (uk_prime_minister_content_processed_id) REFERENCES uk_prime_minister_content_processed(uk_prime_minister_content_id)
+        FOREIGN KEY ({table_name}_content_processed_id) REFERENCES {table_name}_content_processed({table_name}_content_id)
     );
     """
     cursor.execute(create_table_query)
 
-def create_roberta_sentiment_analysis_table(cursor):
+def create_roberta_sentiment_analysis_table(cursor, table_name):
     """
     Create the roberta_sentiment_analysis table if it doesn't exist.
     
     @param cursor: A cursor object to execute database commands.
+    @param table_name: The name of the table.
     @ret: None.
     """
-    create_table_query = """
-    CREATE TABLE IF NOT EXISTS sentiment_analysis_roberta (
-        uk_prime_minister_content_id INT PRIMARY KEY,
+    create_table_query = f"""
+    CREATE TABLE IF NOT EXISTS {table_name}_sentiment_roberta (
+        {table_name}_content_id INT PRIMARY KEY,
         sentiment TEXT,
-        FOREIGN KEY (uk_prime_minister_content_id) REFERENCES uk_prime_minister_content(uk_prime_minister_id)
+        FOREIGN KEY ({table_name}_content_id) REFERENCES {table_name}_content({table_name}_id)
     );
     """
     cursor.execute(create_table_query)
 
-def create_geospatial_analysis_table(cursor):
+def create_geospatial_analysis_table(cursor, table_name):
     """
     Create the geospatial analysis results table if it doesn't exist.
     
     @param cursor: A cursor object to execute database commands.
+    @param table_name: The name of the table.
     @ret: None.
     """
-    create_table_query = """
-    CREATE TABLE IF NOT EXISTS uk_prime_minister_geospatial_analysis (
-        uk_prime_minister_content_id INT PRIMARY KEY,
+    create_table_query = f"""
+    CREATE TABLE IF NOT EXISTS {table_name}_geospatial (
+        {table_name}_content_id INT PRIMARY KEY,
         longitude DECIMAL NOT NULL,
         latitude DECIMAL NOT NULL,
         location TEXT NOT NULL,
-        FOREIGN KEY (uk_prime_minister_content_id) REFERENCES uk_prime_minister_content(uk_prime_minister_id)
+        FOREIGN KEY ({table_name}_content_id) REFERENCES {table_name}_content({table_name}_id)
     );
     """
     cursor.execute(create_table_query)
