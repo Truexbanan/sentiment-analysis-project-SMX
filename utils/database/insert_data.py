@@ -1,4 +1,4 @@
-def insert_prime_minister_content(cursor, data, table_name):
+def insert_content_data(cursor, data, table_name):
     """
     Insert fetched content into the specified content table.
 
@@ -14,7 +14,7 @@ def insert_prime_minister_content(cursor, data, table_name):
     """
     cursor.executemany(insert_query, data)
 
-def insert_prime_minister_processed_content(cursor, data, table_name):
+def insert_processed_content_data(cursor, data, table_name):
     """
     Insert processed content into the specified processed content table.
 
@@ -30,7 +30,7 @@ def insert_prime_minister_processed_content(cursor, data, table_name):
     """
     cursor.executemany(insert_query, data)
 
-def insert_prime_minister_language(cursor, data, table_name):
+def insert_language_data(cursor, data, table_name):
     """
     Insert language data into the specified language table.
 
@@ -46,7 +46,7 @@ def insert_prime_minister_language(cursor, data, table_name):
     """
     cursor.executemany(insert_query, data)
 
-def insert_geospatial_data_to_database(cursor, data, table_name):
+def insert_geospatial_data(cursor, data, table_name):
     """
     Insert geospatial analysis results into the specified geospatial table.
 
@@ -64,7 +64,7 @@ def insert_geospatial_data_to_database(cursor, data, table_name):
     """
     cursor.executemany(insert_query, data)
 
-def insert_vader_data_to_database(cursor, data, table_name):
+def insert_vader_sentiment_data(cursor, data, table_name):
     """
     Insert VADER sentiment analysis results into the specified VADER sentiment table.
 
@@ -82,7 +82,7 @@ def insert_vader_data_to_database(cursor, data, table_name):
     formatted_data = [(item[0], item[2]) for item in data]
     cursor.executemany(insert_query, formatted_data)
 
-def insert_roberta_data_to_database(cursor, data, table_name):
+def insert_roberta_sentiment_data(cursor, data, table_name):
     """
     Insert roBERTa sentiment analysis results into the specified roBERTa sentiment table.
 

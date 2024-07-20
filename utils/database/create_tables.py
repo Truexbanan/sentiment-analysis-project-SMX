@@ -1,4 +1,4 @@
-def create_prime_minister_content_table(cursor, table_name):
+def create_content_table(cursor, table_name):
     """
     Create the social media post content table if it doesn't exist.
     
@@ -15,7 +15,7 @@ def create_prime_minister_content_table(cursor, table_name):
     """
     cursor.execute(create_table_query)
 
-def create_prime_minister_processed_content_table(cursor, table_name):
+def create_processed_content_table(cursor, table_name):
     """
     Create the processed social media post content table if it doesn't exist.
     
@@ -32,7 +32,7 @@ def create_prime_minister_processed_content_table(cursor, table_name):
     """
     cursor.execute(create_table_query)
 
-def create_prime_minister_language_table(cursor, table_name):
+def create_language_table(cursor, table_name):
     """
     Create a table that stores the post's language and id.
 
@@ -49,7 +49,7 @@ def create_prime_minister_language_table(cursor, table_name):
     """
     cursor.execute(create_table_query)
 
-def create_vader_sentiment_analysis_table(cursor, table_name):
+def create_vader_sentiment_table(cursor, table_name):
     """
     Create the vader sentiment analysis table if it doesn't exist.
     
@@ -66,7 +66,7 @@ def create_vader_sentiment_analysis_table(cursor, table_name):
     """
     cursor.execute(create_table_query)
 
-def create_roberta_sentiment_analysis_table(cursor, table_name):
+def create_roberta_sentiment_table(cursor, table_name):
     """
     Create the roberta sentiment analysis table if it doesn't exist.
     

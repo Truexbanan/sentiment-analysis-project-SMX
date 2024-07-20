@@ -1,13 +1,13 @@
 from utils.database import (
     initialize_database,
     create_database_tables,
-    fetch_prime_minister_data,
-    fetch_prime_minister_language,
-    fetch_geospatial_data_from_database,
-    insert_prime_minister_content,
+    fetch_content_data,
+    fetch_language_data,
+    fetch_geospatial_data,
+    insert_content_data,
 )
 from src.sentiment_pipeline import vader_sentiment_analysis, roberta_sentiment_analysis, analyze_all_models
-from utils.database.insert_data import insert_prime_minister_language, insert_geospatial_data_to_database
+from utils.database.insert_data import insert_language_data, insert_geospatial_data
 from utils.general.table_utils import get_table_name_from_user
 import logging
 
@@ -44,12 +44,12 @@ def fetch_and_store_prime_minister_and_geospatial_data(cursor, table_name):
         - geospatial_data (np.ndarray): Fetched geospatial data.
     """
     try:
-        data = fetch_prime_minister_data(cursor, table_name)
-        language = fetch_prime_minister_language(cursor, table_name)
-        insert_prime_minister_language(cursor, data, table_name)
-        insert_prime_minister_content(cursor, data, table_name)
-        geospatial_data = fetch_geospatial_data_from_database(cursor, table_name)
-        insert_geospatial_data_to_database(cursor, geospatial_data, table_name)
+        data = fetch_content_data(cursor, table_name)
+        language = fetch_language_data(cursor, table_name)
+        insert_language_data(cursor, data, table_name)
+        insert_content_data(cursor, data, table_name)
+        geospatial_data = fetch_geospatial_data(cursor, table_name)
+        insert_geospatial_data(cursor, geospatial_data, table_name)
     except Exception as e:
         logging.error(f"An error occurred while fetching and inserting data: {e}")
         raise  # Re-raise the exception after logging

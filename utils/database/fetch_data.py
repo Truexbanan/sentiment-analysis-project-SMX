@@ -1,6 +1,6 @@
 import numpy as np
 
-def fetch_prime_minister_data(cursor, table_name):
+def fetch_content_data(cursor, table_name):
     """
     Fetch content data from the specified table.
 
@@ -14,7 +14,7 @@ def fetch_prime_minister_data(cursor, table_name):
     formatted_data = np.array([[row[0], row[1]] for row in data])
     return formatted_data
 
-def fetch_prime_minister_language(cursor, table_name):
+def fetch_language_data(cursor, table_name):
     """
     Fetch content language data from the specified table.
 
@@ -28,7 +28,7 @@ def fetch_prime_minister_language(cursor, table_name):
     formatted_data = np.array([[row[0], row[1]] for row in data])
     return formatted_data
 
-def fetch_geospatial_data_from_database(cursor, table_name):
+def fetch_geospatial_data(cursor, table_name):
     """
     Fetch data relevant to geospatial analysis from the specified table.
     Avoid fetching data that explicitly states it's from US locations.

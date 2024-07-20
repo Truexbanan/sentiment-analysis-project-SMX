@@ -9,7 +9,7 @@ The results of the analysis are then stored in the database.
 
 from src.vader_analysis import vader_analyze_batch
 from src.roberta_process_data import roberta_analyze_data
-from utils.database.insert_data import insert_prime_minister_processed_content, insert_vader_data_to_database, insert_roberta_data_to_database, insert_geospatial_data_to_database
+from utils.database.insert_data import insert_processed_content_data, insert_vader_sentiment_data, insert_roberta_sentiment_data, insert_geospatial_data
 from src.normalization import preprocess_data
 
 def prompt_model_selection():
@@ -45,7 +45,7 @@ def preprocess_and_store_data(cursor, data, language, table_name):
     @ret (np.ndarray): The processed data.
     """
     processed_data = preprocess_data(data, language)
-    insert_prime_minister_processed_content(cursor, processed_data, table_name)
+    insert_processed_content_data(cursor, processed_data, table_name)
     return processed_data
 
 def vader_sentiment_analysis(cursor, processed_data, table_name):
@@ -58,7 +58,7 @@ def vader_sentiment_analysis(cursor, processed_data, table_name):
     @ret: None.
     """
     vader_results = vader_analyze_batch(processed_data)
-    insert_vader_data_to_database(cursor, vader_results, table_name)
+    insert_vader_sentiment_data(cursor, vader_results, table_name)
 
 def roberta_sentiment_analysis(cursor, data, table_name):
     """
@@ -74,7 +74,7 @@ def roberta_sentiment_analysis(cursor, data, table_name):
     for i in range(0, len(data), batch_size):
         batch = data[i:i+batch_size]
         roberta_results.extend(roberta_analyze_data(batch))
-    insert_roberta_data_to_database(cursor, roberta_results, table_name)
+    insert_roberta_sentiment_data(cursor, roberta_results, table_name)
 
 def analyze_all_models(cursor, processed_data, data, table_name):
     """
