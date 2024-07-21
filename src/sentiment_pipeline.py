@@ -7,7 +7,7 @@ def preprocess_and_store_data(cursor, data, language, table_name):
     """
     Preprocess the data and store the processed data in the database.
 
-    @param cursor: The database cursor.
+    @param cursor (object): The database cursor.
     @param data (np.ndarray): The raw data to preprocess.
     @param language (np.ndarray): A NumPy array of [id, language] pairs used for language lookup.
     @param table_name (str): The name of the table where the data should be stored.
@@ -21,7 +21,7 @@ def vader_sentiment_analysis(cursor, processed_data, table_name):
     """
     Perform VADER sentiment analysis and store the results in the database.
 
-    @param cursor: The database cursor.
+    @param cursor (object): The database cursor.
     @param processed_data (np.ndarray): The processed data to analyze.
     @param table_name (str): The name of the table where the results should be stored.
     @ret (np.ndarray): The VADER sentiment analysis results.
@@ -34,7 +34,7 @@ def roberta_sentiment_analysis(cursor, data, table_name):
     """
     Perform roBERTa sentiment analysis and store the results in the database.
 
-    @param cursor: The database cursor.
+    @param cursor (object): The database cursor.
     @param data (np.ndarray): The data to analyze.
     @param table_name (str): The name of the table where the results should be stored.
     @ret (list of lists): The roBERTa sentiment analysis results.
@@ -51,7 +51,7 @@ def analyze_all_models(cursor, processed_data, data, table_name):
     """
     Perform sentiment analysis using both VADER and roBERTa models and store the results in the database.
 
-    @param cursor: The database cursor.
+    @param cursor (object): The database cursor.
     @param processed_data (np.ndarray): The preprocessed data for VADER analysis.
     @param data (np.ndarray): The raw data for roBERTa analysis.
     @param table_name (str): The name of the table where the results should be stored.
@@ -90,7 +90,7 @@ def perform_selected_sentiment_analysis(model, cursor, processed_data, raw_data,
     Perform sentiment analysis based on the chosen model.
 
     @param model (int or str): The chosen model number (1 for VADER, 2 for roBERTa, and anything else for all models).
-    @param cursor: The database cursor.
+    @param cursor (object): The database cursor.
     @param processed_data (np.ndarray): The preprocessed data.
     @param raw_data (np.ndarray): The raw data.
     @param table_name (str): The name of the table.

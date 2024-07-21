@@ -18,9 +18,9 @@ def main():
     start_time = time.time()
     try:
         # Initialize and fetch data
-        conn, cursor, table_name, prime_minister_data, language_data, geospatial_data = initialize_and_fetch_data()
+        conn, cursor, table_name, content_data, language_data, geospatial_data = initialize_and_fetch_data()
 
-        if prime_minister_data.size == 0:
+        if content_data.size == 0:
             return  # Exit if data is None
 
         # Prompt model selection
@@ -29,10 +29,10 @@ def main():
             return  # Exit if user chooses to quit
         
         # Preprocess and store the fetched data
-        processed_data = preprocess_and_store_data(cursor, prime_minister_data, language_data, table_name)
+        processed_content_data = preprocess_and_store_data(cursor, content_data, language_data, table_name)
 
         # Perform sentiment analysis
-        results = perform_selected_sentiment_analysis(model, cursor, processed_data, prime_minister_data, table_name)
+        results = perform_selected_sentiment_analysis(model, cursor, processed_content_data, content_data, table_name)
 
         for sentiment_results, model_name in results:
             # Perform geospatial analysis
