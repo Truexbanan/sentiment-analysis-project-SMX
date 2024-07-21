@@ -59,7 +59,7 @@ def translate_text(text, language):
 def tokenize_text(text, language):
     """
     Tokenize the text by removing mentions, hashtags, URLs, and extra spaces,
-    translating the text, and lemmatizing non-stop words and non-punctuation tokens.
+    translating the text, and lemmatizing the tokens.
 
     @param text (str): The text to tokenize.
     @param language (str): The language code for translation.
@@ -79,7 +79,7 @@ def tokenize_text(text, language):
     translated_text = translate_text(text, language)
     doc = nlp(translated_text)
     # Create list of lemmatized tokens, excluding stop words and punctuation
-    return [token.lemma_ for token in doc if (not token.is_stop or token.dep_ == 'neg') and not token.is_punct]
+    return [token.lemma_ for token in doc]
 
 def preprocess_text(text, language):
     """
