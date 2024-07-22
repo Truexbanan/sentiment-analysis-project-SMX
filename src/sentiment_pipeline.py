@@ -32,12 +32,12 @@ def vader_sentiment_analysis(cursor, processed_data, table_name):
 
 def roberta_sentiment_analysis(cursor, data, table_name):
     """
-    Perform roBERTa sentiment analysis and store the results in the database.
+    Perform RoBERTa sentiment analysis and store the results in the database.
 
     @param cursor (object): The database cursor.
     @param data (np.ndarray): The data to analyze.
     @param table_name (str): The name of the table where the results should be stored.
-    @ret (list of lists): The roBERTa sentiment analysis results.
+    @ret (list of lists): The RoBERTa sentiment analysis results.
     """
     batch_size = 200  # Adjust batch size according to your memory capacity
     roberta_results = []
@@ -49,15 +49,15 @@ def roberta_sentiment_analysis(cursor, data, table_name):
 
 def analyze_all_models(cursor, processed_data, data, table_name):
     """
-    Perform sentiment analysis using both VADER and roBERTa models and store the results in the database.
+    Perform sentiment analysis using both VADER and RoBERTa models and store the results in the database.
 
     @param cursor (object): The database cursor.
     @param processed_data (np.ndarray): The preprocessed data for VADER analysis.
-    @param data (np.ndarray): The raw data for roBERTa analysis.
+    @param data (np.ndarray): The raw data for RoBERTa analysis.
     @param table_name (str): The name of the table where the results should be stored.
     @ret: A tuple containing:
         - (np.ndarray): VADER sentiment analysis results.
-        - (list of lists): roBERTa sentiment analysis results.
+        - (list of lists): RoBERTa sentiment analysis results.
     """
     vader_results = vader_sentiment_analysis(cursor, processed_data, table_name)
     roberta_results = roberta_sentiment_analysis(cursor, data, table_name)
@@ -68,11 +68,11 @@ def prompt_model_selection():
     Prompt the user to select a sentiment analysis model.
 
     @param: None.
-    @ret (int or str): The chosen model number (1 for VADER, 2 for roBERTa, and anything else for all models). 'q' to quit.
+    @ret (int or str): The chosen model number (1 for VADER, 2 for RoBERTa, and anything else for all models). 'q' to quit.
     """
     print("""Sentiment Analysis Models:
     1. VADER
-    2. Hugging Face's roBERTa
+    2. Hugging Face's RoBERTa
     
     Enter any other key to run all models. To quit, enter `q`
     """)
@@ -89,14 +89,14 @@ def perform_selected_sentiment_analysis(model, cursor, processed_data, raw_data,
     """
     Perform sentiment analysis based on the chosen model.
 
-    @param model (int or str): The chosen model number (1 for VADER, 2 for roBERTa, and anything else for all models).
+    @param model (int or str): The chosen model number (1 for VADER, 2 for RoBERTa, and anything else for all models).
     @param cursor (object): The database cursor.
     @param processed_data (np.ndarray): The preprocessed data.
     @param raw_data (np.ndarray): The raw data.
     @param table_name (str): The name of the table.
     @ret: A list of tuples, each containing:
         - (np.ndarray or list of dict): The sentiment analysis results.
-        - (str): The name of the sentiment analysis model ('VADER' or 'roBERTa').
+        - (str): The name of the sentiment analysis model ('VADER' or 'RoBERTa').
     """
     if model == 'q':
         return []
@@ -105,7 +105,7 @@ def perform_selected_sentiment_analysis(model, cursor, processed_data, raw_data,
         return [(vader_results, 'VADER')]
     elif model == 2:
         roberta_results = roberta_sentiment_analysis(cursor, raw_data, table_name)
-        return [(roberta_results, 'roBERTa')]
+        return [(roberta_results, 'RoBERTa')]
     else:
         vader_results, roberta_results = analyze_all_models(cursor, processed_data, raw_data, table_name)
-        return [(vader_results, 'VADER'), (roberta_results, 'roBERTa')]
+        return [(vader_results, 'VADER'), (roberta_results, 'RoBERTa')]

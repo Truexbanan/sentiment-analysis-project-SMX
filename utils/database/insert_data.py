@@ -84,10 +84,10 @@ def insert_vader_sentiment_data(cursor, data, table_name):
 
 def insert_roberta_sentiment_data(cursor, data, table_name):
     """
-    Insert roBERTa sentiment analysis results into the specified roBERTa sentiment table.
+    Insert RoBERTa sentiment analysis results into the specified RoBERTa sentiment table.
 
     @param cursor (object): A cursor object to execute database commands.
-    @param data (list of lists): A list of lists containing the roBERTa sentiment analysis results. Each list should be in the format [content_id, _, sentiment].
+    @param data (list of lists): A list of lists containing the RoBERTa sentiment analysis results. Each list should be in the format [content_id, _, sentiment].
     @ret: None.
     """
     insert_query = f"""

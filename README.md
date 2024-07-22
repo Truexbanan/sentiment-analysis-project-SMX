@@ -13,7 +13,7 @@
 
 ## Overview
 
-The goal of this project is to conduct sentiment analysis on social media posts using natural language processing (NLP) techniques. This project encompasses data processing, geospatial analysis, sentiment analysis, and visualization. By implementing two sentiment analysis tools, VADER (Valence Aware Dictionary and sEntiment Reasoner) and Hugging Face’s roBERTa model, we enable a comparative analysis of sentiment outcomes.
+The goal of this project is to conduct sentiment analysis on social media posts using natural language processing (NLP) techniques. This project encompasses data processing, geospatial analysis, sentiment analysis, and visualization. By implementing two sentiment analysis tools, VADER (Valence Aware Dictionary and sEntiment Reasoner) and Hugging Face’s RoBERTa model, we enable a comparative analysis of sentiment outcomes.
 
 ## Installation
 
@@ -27,7 +27,7 @@ The goal of this project is to conduct sentiment analysis on social media posts 
    cd sentiment-analysis
    ```
 
-3. (Optional) Create a virtual environment:
+3. (Optional) Create and activate a virtual environment:
 
    Windows:
    ```
@@ -129,7 +129,9 @@ To use the AWS Translate service, you need to configure your AWS credentials. Fo
 
 1. Ensure that you have an `.env` file, containing the database parameters. If you do not permit access, you will be unable to connect to the database and run this program. This file needs to be located outside of the sentiment-analysis-project directory.
 
-2. Run the `main.py` file in the project directory.
+2. Ensure that your AWS credentials are configured for translation services. This can be done by setting up your environment variables or configuring the AWS CLI as described in the [AWS Configuration](#aws-configuration) section. These credentials are necessary for using the AWS Translate service for language translation during the preprocessing step.
+
+3. Run the `main.py` file in the project directory.
 
    Windows:
    ```
@@ -143,39 +145,51 @@ To use the AWS Translate service, you need to configure your AWS credentials. Fo
 
 ## Usage
 
-After running the program, a connection to the PostgreSQL database will be established, and the contents of the social media posts will be retrieved. The program will then preprocess the posts, analyze their sentiment, and update the database with the results. It will also run geospatial analysis using the coordinates of the posts.
+After running the program, it will establish a connection to the PostgreSQL database and retrieve the contents of the social media posts. The program will then preprocess the posts, analyze their sentiment, and update the database with the results. Additionally, it will perform geospatial analysis using the coordinates of the posts.
 
 1. **Console Output**:
+   - The user will be prompted to enter the base table name the program will work with, which will undergo verification.
    - A sentiment analysis model selector prompt will appear in the terminal. The user can input a value corresponding to their chosen model:
       - `1`: VADER
-      - `2`: Hugging Face's roBERTa
+      - `2`: Hugging Face's RoBERTa
       - Any other key: Run all models
    - The user can also exit the program by entering `q`.
 2. **Database Updates**:
    - **Sentiment Analysis**:
       - If a results table for the selected model does not exist, a new table will be created with the following structure:
          - **Raw Data Models**:
-            - `uk_prime_minister_content_id`: The index of the content.
+            - `{table_name}_content_id`: The index of the content.
             - `sentiment`: The sentiment identified using the specified model's sentiment analysis.
          - **Processed Data Models**:
-            - `uk_prime_minister_content_processed_id`: The index of the processed content.
+            - `{table_name}_content_processed_id`: The index of the processed content.
             - `sentiment`: The sentiment identified using the specified model's sentiment analysis.
       - The sentiment analysis results will be stored in the respective table.
 
    - **Geospatial Analysis**:
-      - If a table for geospatial analysis does not exist, a new table will be created to store relevant information for analysis.
-      - The program will plot the geospatial data on both a world map and a UK map using the coordinates of the posts. These plots will appear after sentiment analysis.
+      - The program dynamically handles the creation of tables for geospatial analysis. If a table for geospatial analysis does not exist, a new table will be created to store relevant information for analysis.
+		- The program will plot the geospatial data on both a world map and a UK map using the coordinates of the posts. These plots will appear after sentiment analysis.
 
 ### Example
 
 Below is an example of what a model's table would look like:
 
-| content_id |   sentiment  |
-|------------|--------------|
-| 1          |   Negative   |
-| 2          |   Neutral    |
-| 3          |   Positive   |
-| 4          |   Positive   |
+Table name: Example
+
+**For VADER (Processed Data)**:
+| example_content_processed_id |   sentiment  |
+|------------------------------|--------------|
+| 1                            |   Negative   |
+| 2                            |   Neutral    |
+| 3                            |   Positive   |
+| 4                            |   Positive   |
+
+**For RoBERTa (Raw Data)**:
+| example_content_id |   sentiment  |
+|--------------------|--------------|
+| 1                  |   Negative   |
+| 2                  |   Neutral    |
+| 3                  |   Neutral    |
+| 4                  |   Positive   |
 
 ## Extending the Project
 
@@ -183,33 +197,64 @@ The program is designed to be easily extendable. If you want to add new features
 
 ### Adding New Tables
 
-To add a new table, follow the pattern used in the `create_tables.py` file. For example, to create a new table for storing additional metadata:
+To add a new table for storing sentiment analysis results for a specific model, follow the pattern used in the create_tables.py file. In the function names, replace 'model' with the sentiment model’s name (e.g., create_vader_sentiment_table for VADER). The approach differs based on whether you’re using processed or raw data.
 
+Using processed data:
 ```python
-def create_metadata_table(cursor):
-   create_table_query = """
-   CREATE TABLE IF NOT EXISTS uk_prime_minister_metadata (
-      uk_prime_minister_content_processed_id INT PRIMARY KEY,
-      sentiment TEXT,
-      FOREIGN KEY (uk_prime_minister_content_processed_id) REFERENCES uk_prime_minister_content_processed(uk_prime_minister_content_id)
-   );
-   """
-   cursor.execute(create_table_query)
+def create_model_sentiment_table(cursor, table_name):
+    create_table_query = f"""
+    CREATE TABLE IF NOT EXISTS {table_name}_sentiment_model (
+        {table_name}_content_processed_id INT PRIMARY KEY,
+        sentiment TEXT,
+        FOREIGN KEY ({table_name}_content_processed_id) REFERENCES {table_name}_content_processed({table_name}_content_id)
+    );
+    """
+    cursor.execute(create_table_query)
+```
+
+OR Using raw data:
+```py
+def create_model_sentiment_table(cursor, table_name):
+    create_table_query = f"""
+    CREATE TABLE IF NOT EXISTS {table_name}_sentiment_model (
+        {table_name}_content_id INT PRIMARY KEY,
+        sentiment TEXT,
+        FOREIGN KEY ({table_name}_content_id) REFERENCES {table_name}_content({table_name}_id)
+    );
+    """
+    cursor.execute(create_table_query)
 ```
 
 ### Inserting Data into New Tables
 
-To insert data into the new table, follow the pattern used in the `insert_data.py` file. For example, to insert data into the new metadata table:
+To insert data into the new table, follow the pattern used in the `insert_data.py` file. The approach differs based on whether you're using processed or raw data.
 
+Using processed data:
 ```py
-def insert_metadata(cursor, data):
-   insert_query = """
-      INSERT INTO uk_prime_minister_metadata (uk_prime_minister_content_processed_id, sentiment)
-      VALUES (%s, %s)
-      ON CONFLICT (uk_prime_minister_content_processed_id) DO UPDATE SET
-      sentiment = EXCLUDED.sentiment
-   """
-   cursor.executemany(insert_query, data)
+def insert_model_sentiment_data(cursor, data, table_name):
+    insert_query = f"""
+        INSERT INTO {table_name}_sentiment_model ({table_name}_content_processed_id, sentiment)
+        VALUES (%s, %s)
+        ON CONFLICT ({table_name}_content_processed_id) DO UPDATE SET
+        sentiment = EXCLUDED.sentiment;
+    """ 
+    # Convert to list of tuples for executemany
+    formatted_data = [(item[0], item[2]) for item in data]
+    cursor.executemany(insert_query, formatted_data)
+```
+
+OR Using raw data:
+```py
+def insert_model_sentiment_data(cursor, data, table_name):
+    insert_query = f"""
+        INSERT INTO {table_name}_sentiment_model ({table_name}_content_id, sentiment)
+        VALUES (%s, %s)
+        ON CONFLICT ({table_name}_content_id) DO UPDATE SET
+        sentiment = EXCLUDED.sentiment;
+    """ 
+    # Convert to list of tuples for executemany
+    formatted_data = [(item[0], item[2]) for item in data]
+    cursor.executemany(insert_query, formatted_data)
 ```
 
 ### Updating the Model Selection Process
@@ -226,19 +271,19 @@ By following these steps, you can seamlessly extend the project to include new t
 Upon analyzing social media posts related to United Kingdom's Prime Minister Rishi Sunak, the sentiment analysis models revealed significantly differing results. These results can be compared to the corresponding sentiments provided by CobWebs.
 
 - **CobWebs Sentiment Analysis:**
-  - Positive: 56.98%
-  - Negative: 16.17%
-  - Neutral: 26.86%
+  - Positive: 57.79%
+  - Negative: 15.88%
+  - Neutral: 26.33%
 
 - **VADER Sentiment Analysis:**
-  - Positive: 37.06%
-  - Negative: 39.83%
-  - Neutral: 23.12%
+  - Positive: 37.61%
+  - Negative: 40.19%
+  - Neutral: 22.20%
 
-- **roBERTa Sentiment Analysis:**
-  - Positive: 0.09%
-  - Negative: 16.50%
-  - Neutral: 74.16%
+- **RoBERTa Sentiment Analysis:**
+  - Positive: 11.71%
+  - Negative: 20.40%
+  - Neutral: 67.89%
 
 ## Authors and Acknowledgment
 

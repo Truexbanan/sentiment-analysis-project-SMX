@@ -46,7 +46,7 @@ def translate_text(text, language):
     try:
         response = translate_client.translate_text(
             Text=text,
-            SourceLanguageCode=language if language != None else 'auto',
+            SourceLanguageCode=language if language is not None else 'auto',
             TargetLanguageCode='en'
         )
         # Store the translated text in the cache

@@ -44,7 +44,7 @@ def process_geospatial_data(geospatial_data, sentiment_results):
                 point = Point(lon, lat)
                 x, y = transformer.transform(point.x, point.y)
                 transformed_points.append((x, y))
-                original_points_and_sentiments.append((lon, lat, sentiment_results[i, 2]))  # Include sentiment label
+                original_points_and_sentiments.append((lon, lat, sentiment_results[i][2]))  # Include sentiment label
         except ValueError as e:
             logging.error(f"Invalid data point {data}: {e}")
             continue
@@ -58,9 +58,9 @@ def sentiment_to_color(sentiment):
     @param sentiment (str): Sentiment label (negative, positive, neutral).
     @ret (str): Corresponding color for the sentiment.
     """
-    if sentiment == 'Negative':
+    if sentiment == 'Negative' or sentiment == 'Slightly Negative':
         return 'red'
-    elif sentiment == 'Positive':
+    elif sentiment == 'Positive' or sentiment == 'Slightly Positive':
         return 'green'
     elif sentiment == 'Neutral':
         return 'blue'
