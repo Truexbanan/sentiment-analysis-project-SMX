@@ -75,6 +75,20 @@ def plot_geospatial_data(original_points_and_sentiments, model_name):
     @ret: None.
     """
     fig, ax = plt.subplots(1, 2, figsize=(15, 10), subplot_kw={'projection': ccrs.PlateCarree()})
+
+    # Define colors and labels for the legend
+    if model_name.lower() == 'vader':
+        legend_labels = {
+            'Negative': 'red',
+            'Neutral': 'blue',
+            'Positive': 'green'
+        }
+    elif model_name.lower == 'roberta':
+        legend_labels = {
+            'Negative': 'red',
+            'Neutral': 'blue',
+            'Positive': 'green'
+        }
     
     # World Map
     ax[0].set_title(f'World Map - Sentiment Analysis by {model_name}')
@@ -86,9 +100,15 @@ def plot_geospatial_data(original_points_and_sentiments, model_name):
     ax[0].add_feature(cf.RIVERS)
     ax[0].gridlines(draw_labels=True)
 
+    # Plot data points
     for lon, lat, sentiment in original_points_and_sentiments:
         color = sentiment_to_color(sentiment)
         ax[0].scatter(lon, lat, color=color, s=20)
+    
+    # Add legend to World Map
+    handles = [plt.Line2D([0], [0], marker='o', color='w', markerfacecolor=color, markersize=10) for color in legend_labels.values()]
+    labels = [label for label in legend_labels.keys()]
+    ax[0].legend(handles, labels, title='Sentiment', loc='upper right')
 
     # UK Map
     ax[1].set_extent([-10, 3, 49, 61], ccrs.PlateCarree())  # UK extent
@@ -101,9 +121,13 @@ def plot_geospatial_data(original_points_and_sentiments, model_name):
     ax[1].add_feature(cf.RIVERS)
     ax[1].gridlines(draw_labels=True)
 
+    # Plot data points
     for lon, lat, sentiment in original_points_and_sentiments:
         color = sentiment_to_color(sentiment)
         ax[1].scatter(lon, lat, color=color, s=30)
+
+    # Add legend to UK Map
+    ax[1].legend(handles, labels, title='Sentiment', loc='upper right')
 
     plt.tight_layout()
     plt.show()

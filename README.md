@@ -173,7 +173,7 @@ After running the program, it will establish a connection to the PostgreSQL data
 
 Below is an example of what a model's table would look like:
 
-Table name: Example
+Table name: example
 
 **For VADER (Processed Data)**:
 | example_content_processed_id |   sentiment  |
