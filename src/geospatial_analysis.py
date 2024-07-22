@@ -83,7 +83,7 @@ def plot_geospatial_data(original_points_and_sentiments, model_name):
             'Neutral': 'blue',
             'Positive': 'green'
         }
-    elif model_name.lower == 'roberta':
+    elif model_name.lower() == 'roberta':
         legend_labels = {
             'Negative': 'red',
             'Neutral': 'blue',

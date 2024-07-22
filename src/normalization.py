@@ -78,8 +78,19 @@ def tokenize_text(text, language):
 
     translated_text = translate_text(text, language)
     doc = nlp(translated_text)
-    # Create list of lemmatized tokens, excluding stop words and punctuation
-    return [token.lemma_ for token in doc]
+
+    important_stop_words_for_vader = [
+        'very', 'more', 'most', 'some', 'much', 'any', 'never', 'always', 'quite', 
+        'so', 'only', 'really', 'too', 'somewhat', 'even', 'just', 'also', 'still', 
+        'could', 'would', 'might', 'should', 'can', 'cannot', 'did', 'do', 'does', 
+        'has', 'have', 'had', 'be', 'been', 'being', 'it', 'its', 'their', 'there', 
+        'therefore', 'because', 'when', 'if', 'then', 'although', 'while', 'where', 
+        'why', 'how', 'what', 'which', 'who', 'whom', 'whose', 'whereas', 'beside', 
+        'besides', 'including', 'among', 'between', 'under', 'over', 'above', 
+        'around', 'through', 'during', 'before', 'after', 'until', 'since'
+    ]
+    # Create list of lemmatized tokens
+    return [token.lemma_ for token in doc if (not token.is_stop or token.dep_ == 'neg') and (token.text.lower() not in important_stop_words_for_vader)]
 
 def preprocess_text(text, language):
     """
