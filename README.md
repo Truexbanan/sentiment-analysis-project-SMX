@@ -13,7 +13,7 @@
 
 ## Overview
 
-The goal of this project is to conduct sentiment analysis on social media posts using natural language processing (NLP) techniques. This project encompasses data processing, geospatial analysis, sentiment analysis, and visualization. By implementing two sentiment analysis tools, VADER (Valence Aware Dictionary and sEntiment Reasoner) and Hugging Face’s RoBERTa model, we enable a comparative analysis of sentiment outcomes.
+The goal of this project is to conduct sentiment analysis on social media posts using natural language processing (NLP) techniques. This project encompasses data processing, geospatial plotting, sentiment analysis, and visualization. By implementing two sentiment analysis tools, VADER (Valence Aware Dictionary and sEntiment Reasoner) and Hugging Face’s RoBERTa model, we enable a comparative analysis of sentiment outcomes.
 
 ## Installation
 
@@ -145,7 +145,7 @@ To use the AWS Translate service, you need to configure your AWS credentials. Fo
 
 ## Usage
 
-After running the program, it will establish a connection to the PostgreSQL database and retrieve the contents of the social media posts. The program will then preprocess the posts, analyze their sentiment, and update the database with the results. Additionally, it will perform geospatial analysis using the coordinates of the posts.
+After running the program, it will establish a connection to the PostgreSQL database and retrieve the contents of the social media posts. The program will then preprocess the posts, analyze their sentiment, and update the database with the results. Additionally, it will perform geospatial plotting using the coordinates of the posts.
 
 1. **Console Output**:
    - The user will be prompted to enter the base table name the program will work with, which will undergo verification.

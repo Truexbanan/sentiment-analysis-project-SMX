@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(
 def main():
     """
     Main function to connect to the database, fetch data, preprocess it, analyze its sentiment,
-    and store the results. Also performs geospatial analysis.
+    and store the results. Also performs geospatial plotting.
 
     @param: None.
     @ret: None.
@@ -35,7 +35,7 @@ def main():
         results = perform_selected_sentiment_analysis(model, cursor, processed_content_data, content_data, table_name)
 
         for sentiment_results, model_name in results:
-            # Perform geospatial analysis
+            # Perform geospatial plotting
             analyze_geospatial(geospatial_data, sentiment_results, model_name)
 
     except Exception as e:
