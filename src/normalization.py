@@ -80,14 +80,14 @@ def tokenize_text(text, language):
     doc = nlp(translated_text)
 
     important_stop_words_for_vader = [
-        'very', 'more', 'most', 'some', 'much', 'any', 'never', 'always', 'quite', 
-        'so', 'only', 'really', 'too', 'somewhat', 'even', 'just', 'also', 'still', 
-        'could', 'would', 'might', 'should', 'can', 'cannot', 'did', 'do', 'does', 
-        'has', 'have', 'had', 'be', 'been', 'being', 'it', 'its', 'their', 'there', 
-        'therefore', 'because', 'when', 'if', 'then', 'although', 'while', 'where', 
-        'why', 'how', 'what', 'which', 'who', 'whom', 'whose', 'whereas', 'beside', 
-        'besides', 'including', 'among', 'between', 'under', 'over', 'above', 
-        'around', 'through', 'during', 'before', 'after', 'until', 'since'
+        'really', 'some', 'almost', 'quite', 'rather', 'because', 'never',
+        'always', 'could', 'enough', 'might', 'without', 'have', 'also', 'can',
+        'should', 'not', 'only', 'more', 'whatever', 'beside', 'although',
+        'however', 'yet', 'still', 'while', 'but', 'despite', 'nowhere',
+        'otherwise', 'nevertheless', 'therefore', 'moreover', 'serious', 'nothing',
+        'another', 'mostly', 'except', 'hence', 'cannot', 'last', 'than', 'barely',
+        'hardly', 'just', 'little', 'merely', 'nearly', 'scarcely', 'simply',
+        'solely', 'very'
     ]
     # Create list of lemmatized tokens
     return [token.lemma_ for token in doc if (not token.is_stop or token.dep_ == 'neg') and (token.text.lower() not in important_stop_words_for_vader)]
