@@ -1,39 +1,61 @@
 from utils.database import (
-    fetch_prime_minister_data,
-    fetch_prime_minister_language,
-    fetch_geospatial_data_from_database,
-    insert_prime_minister_content,
+    initialize_database,
+    create_database_tables,
+    fetch_content_data,
+    fetch_language_data,
+    fetch_geospatial_data,
+    insert_content_data,
 )
-from src.sentiment_pipeline import vader_sentiment_analysis, roberta_sentiment_analysis, analyze_all_models
+from utils.database.insert_data import insert_language_data, insert_geospatial_data
+from utils.general.table_utils import get_table_name_from_user
+import logging
 
-def fetch_prime_minister_and_geospatial_data(cursor):
+logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(message)s')
+
+def initialize_and_fetch_data():
     """
-    Fetch the prime minister and geospatial data from the database.
+    Initialize the database connection, create necessary tables, and fetch the required data.
+
+    @param: None.
+    @ret conn (object): The database connection object.
+    @ret cursor (object): The database cursor object.
+    @ret table_name (str): The name of the table.
+    @ret prime_minister_data (np.ndarray): Fetched prime minister data.
+    @ret language_data (np.ndarray): Fetched language data.
+    @ret geospatial_data (np.ndarray): Fetched geospatial data.
+    """
+    conn, cursor = initialize_database()
+    table_name = get_table_name_from_user(cursor)
+    create_database_tables(cursor, table_name)
+    content_data, language_data, geospatial_data = fetch_and_store_table_data(cursor, table_name)
+    return conn, cursor, table_name, content_data, language_data, geospatial_data
+
+def fetch_and_store_table_data(cursor, table_name):
+    """
+    Fetch data from the specified table and store it in the appropriate tables.
     
-    @param cursor: The database cursor.
-    @ret: Tuple of prime minister data, language data, and geospatial data.
+    @param cursor (object): The database cursor.
+    @param table_name (str): The name of the table to fetch data from.
+    @ret (tuple): A tuple containing:
+        - data (np.ndarray): Fetched content data.
+        - language_data (np.ndarray): Fetched language data.
+        - geospatial_data (np.ndarray): Fetched geospatial data.
     """
-    data = fetch_prime_minister_data(cursor)
-    language = fetch_prime_minister_language(cursor)
-    geospatial_data = fetch_geospatial_data_from_database(cursor)
-    insert_prime_minister_content(cursor, data)
-    return data, language, geospatial_data
+    try:
+        # Fetch data from the specified table
+        data = fetch_content_data(cursor, table_name)
+        language_data = fetch_language_data(cursor, table_name)
+        
+        # Insert fetched data into the respective tables
+        insert_language_data(cursor, language_data, table_name)
+        insert_content_data(cursor, data, table_name)
+        
+        # Fetch and insert geospatial data
+        geospatial_data = fetch_geospatial_data(cursor, table_name)
+        insert_geospatial_data(cursor, geospatial_data, table_name)
+    
+    except Exception as e:
+        logging.error(f"An error occurred while fetching and inserting data: {e}")
+        raise  # Re-raise the exception after logging
 
-def perform_selected_sentiment_analysis(model, cursor, processed_data, raw_data):
-    """
-    Perform sentiment analysis based on the chosen model.
-
-    @param model: The chosen model number.
-    @param cursor: The database cursor.
-    @param processed_data: The preprocessed data.
-    @param raw_data: The raw data.
-    @ret: None.
-    """
-    if model == 'q':
-        return
-    elif model == 1:
-        vader_sentiment_analysis(cursor, processed_data)
-    elif model == 2:
-        roberta_sentiment_analysis(cursor, raw_data)
-    else:
-        analyze_all_models(cursor, processed_data, raw_data)
+    return data, language_data, geospatial_data

@@ -1,26 +1,78 @@
-"""
-sentiment_pipeline.py
-
-This module manages the sentiment analysis pipeline for the sentiment analysis project. 
-It includes functions for prompting the user to select a sentiment analysis model, 
-preprocessing data, and performing sentiment analysis using VADER and roBERTa models. 
-The results of the analysis are then stored in the database.
-"""
-
 from src.vader_analysis import vader_analyze_batch
 from src.roberta_process_data import roberta_analyze_data
-from utils.database.insert_data import insert_prime_minister_processed_content, insert_vader_data_to_database, insert_roberta_data_to_database
+from utils.database.insert_data import insert_processed_content_data, insert_vader_sentiment_data, insert_roberta_sentiment_data
 from src.normalization import preprocess_data
+
+def preprocess_and_store_data(cursor, data, language, table_name):
+    """
+    Preprocess the data and store the processed data in the database.
+
+    @param cursor (object): The database cursor.
+    @param data (np.ndarray): The raw data to preprocess.
+    @param language (np.ndarray): A NumPy array of [id, language] pairs used for language lookup.
+    @param table_name (str): The name of the table where the data should be stored.
+    @ret (np.ndarray): The processed data.
+    """
+    processed_data = preprocess_data(data, language)
+    insert_processed_content_data(cursor, processed_data, table_name)
+    return processed_data
+
+def vader_sentiment_analysis(cursor, processed_data, table_name):
+    """
+    Perform VADER sentiment analysis and store the results in the database.
+
+    @param cursor (object): The database cursor.
+    @param processed_data (np.ndarray): The processed data to analyze.
+    @param table_name (str): The name of the table where the results should be stored.
+    @ret (np.ndarray): The VADER sentiment analysis results.
+    """
+    vader_results = vader_analyze_batch(processed_data)
+    insert_vader_sentiment_data(cursor, vader_results, table_name)
+    return vader_results
+
+def roberta_sentiment_analysis(cursor, data, table_name):
+    """
+    Perform RoBERTa sentiment analysis and store the results in the database.
+
+    @param cursor (object): The database cursor.
+    @param data (np.ndarray): The data to analyze.
+    @param table_name (str): The name of the table where the results should be stored.
+    @ret (list of lists): The RoBERTa sentiment analysis results.
+    """
+    batch_size = 200  # Adjust batch size according to your memory capacity
+    roberta_results = []
+    for i in range(0, len(data), batch_size):
+        batch = data[i:i+batch_size]
+        roberta_results.extend(roberta_analyze_data(batch))
+    insert_roberta_sentiment_data(cursor, roberta_results, table_name)
+    return roberta_results
+
+def analyze_all_models(cursor, processed_data, data, table_name):
+    """
+    Perform sentiment analysis using both VADER and RoBERTa models and store the results in the database.
+
+    @param cursor (object): The database cursor.
+    @param processed_data (np.ndarray): The preprocessed data for VADER analysis.
+    @param data (np.ndarray): The raw data for RoBERTa analysis.
+    @param table_name (str): The name of the table where the results should be stored.
+    @ret: A tuple containing:
+        - (np.ndarray): VADER sentiment analysis results.
+        - (list of lists): RoBERTa sentiment analysis results.
+    """
+    vader_results = vader_sentiment_analysis(cursor, processed_data, table_name)
+    roberta_results = roberta_sentiment_analysis(cursor, data, table_name)
+    return vader_results, roberta_results
 
 def prompt_model_selection():
     """
     Prompt the user to select a sentiment analysis model.
 
-    @ret: The chosen model number (1 for VADER, 2 for roBERTa, and anything else for all models).
+    @param: None.
+    @ret (int or str): The chosen model number (1 for VADER, 2 for RoBERTa, and anything else for all models). 'q' to quit.
     """
     print("""Sentiment Analysis Models:
     1. VADER
-    2. Hugging Face's roBERTa
+    2. Hugging Face's RoBERTa
     
     Enter any other key to run all models. To quit, enter `q`
     """)
@@ -33,54 +85,27 @@ def prompt_model_selection():
     else:
         return 'all'
 
-def preprocess_and_store_data(cursor, data, language):
+def perform_selected_sentiment_analysis(model, cursor, processed_data, raw_data, table_name):
     """
-    Preprocess the data and store the processed data in the database.
+    Perform sentiment analysis based on the chosen model.
 
-    @param cursor: The database cursor.
-    @param data: The raw data to preprocess.
-    @param language: A NumPy array of [id, language] pairs used for language lookup.
-    @ret: The processed data.
+    @param model (int or str): The chosen model number (1 for VADER, 2 for RoBERTa, and anything else for all models).
+    @param cursor (object): The database cursor.
+    @param processed_data (np.ndarray): The preprocessed data.
+    @param raw_data (np.ndarray): The raw data.
+    @param table_name (str): The name of the table.
+    @ret: A list of tuples, each containing:
+        - (np.ndarray or list of dict): The sentiment analysis results.
+        - (str): The name of the sentiment analysis model ('VADER' or 'RoBERTa').
     """
-    processed_data = preprocess_data(data, language)
-    insert_prime_minister_processed_content(cursor, processed_data)
-    return processed_data
-
-def vader_sentiment_analysis(cursor, processed_data):
-    """
-    Perform VADER sentiment analysis and store the results in the database.
-
-    @param cursor: The database cursor.
-    @param data: The processed data to analyze.
-    @ret: The VADER sentiment analysis results.
-    """
-    vader_results = vader_analyze_batch(processed_data)
-    insert_vader_data_to_database(cursor, vader_results)
-    return vader_results
-
-def roberta_sentiment_analysis(cursor, data):
-    """
-    Perform roBERTa sentiment analysis and store the results in the database.
-
-    @param cursor: The database cursor.
-    @param data: The data to analyze.
-    @ret: None.
-    """
-    batch_size = 200  # Adjust batch size according to your memory capacity
-    roberta_results = []
-    for i in range(0, len(data), batch_size):
-        batch = data[i:i+batch_size]
-        roberta_results.extend(roberta_analyze_data(batch))
-    insert_roberta_data_to_database(cursor, roberta_results)
-
-def analyze_all_models(cursor, processed_data, data):
-    """
-    Perform sentiment analysis using both VADER and roBERTa models and store the results in the database.
-
-    @param cursor: The database cursor.
-    @param processed_data: The preprocessed data for VADER analysis.
-    @param data: The raw data for roBERTa analysis.
-    @ret: None.
-    """
-    vader_sentiment_analysis(cursor, processed_data)
-    roberta_sentiment_analysis(cursor, data)
+    if model == 'q':
+        return []
+    elif model == 1:
+        vader_results = vader_sentiment_analysis(cursor, processed_data, table_name)
+        return [(vader_results, 'VADER')]
+    elif model == 2:
+        roberta_results = roberta_sentiment_analysis(cursor, raw_data, table_name)
+        return [(roberta_results, 'RoBERTa')]
+    else:
+        vader_results, roberta_results = analyze_all_models(cursor, processed_data, raw_data, table_name)
+        return [(vader_results, 'VADER'), (roberta_results, 'RoBERTa')]

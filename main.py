@@ -1,8 +1,8 @@
 import logging
-from utils.database import initialize_database_and_tables, close_connection_to_database
+from utils.database import close_connection_to_database
 from src.geospatial_analysis import analyze_geospatial
-from src.sentiment_pipeline import prompt_model_selection, preprocess_and_store_data
-from src.pipeline_helpers import fetch_prime_minister_and_geospatial_data, perform_selected_sentiment_analysis
+from src.sentiment_pipeline import prompt_model_selection, preprocess_and_store_data, perform_selected_sentiment_analysis
+from src.pipeline_helpers import initialize_and_fetch_data
 import time
 
 logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(message)s')
@@ -10,33 +10,33 @@ logging.basicConfig(level=logging.INFO, format='[%(asctime)s] [%(levelname)s] %(
 def main():
     """
     Main function to connect to the database, fetch data, preprocess it, analyze its sentiment,
-    and store the results. Also performs geospatial analysis.
+    and store the results. Also performs geospatial plotting.
 
     @param: None.
     @ret: None.
     """
     start_time = time.time()
     try:
-        # Connect to the database and create tables
-        conn, cursor = initialize_database_and_tables()
+        # Initialize and fetch data
+        conn, cursor, table_name, content_data, language_data, geospatial_data = initialize_and_fetch_data()
 
-        # Fetch data from the database
-        prime_minister_data, language_data, geospatial_data = fetch_prime_minister_and_geospatial_data(cursor)
-        if prime_minister_data.size == 0:
+        if content_data.size == 0:
             return  # Exit if data is None
 
         # Prompt model selection
         model = prompt_model_selection()
+        if model == 'q':
+            return  # Exit if user chooses to quit
+        
+        # Preprocess and store the fetched data
+        processed_content_data = preprocess_and_store_data(cursor, content_data, language_data, table_name)
 
-        if model != 'q': # Don't perform if user Quit program
-            # Preprocess and store the fetched data
-            processed_data = preprocess_and_store_data(cursor, prime_minister_data, language_data)
+        # Perform sentiment analysis
+        results = perform_selected_sentiment_analysis(model, cursor, processed_content_data, content_data, table_name)
 
-            # Perform sentiment analysis
-            perform_selected_sentiment_analysis(model, cursor, processed_data, prime_minister_data)
-
-            # Perform geospatial analysis
-            analyze_geospatial(geospatial_data)
+        for sentiment_results, model_name in results:
+            # Perform geospatial plotting
+            analyze_geospatial(geospatial_data, sentiment_results, model_name)
 
     except Exception as e:
         logging.error(f"An error occurred: {e}")
