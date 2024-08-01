@@ -74,12 +74,12 @@ def prompt_model_selection():
     1. VADER
     2. Hugging Face's RoBERTa
     
-    Enter any other key to run all models. To quit, enter `q`
+    Enter any other key to run all models. To quit, enter `quit`
     """)
     user_input = input("Enter the model choice: ").strip().lower()
 
-    if user_input == 'q':
-        return 'q'
+    if user_input == 'quit':
+        return 'quit'
     elif user_input in ['1', '2']:
         return int(user_input)
     else:

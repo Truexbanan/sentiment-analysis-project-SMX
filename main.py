@@ -16,16 +16,24 @@ def main():
     @ret: None.
     """
     start_time = time.time()
+    conn, cursor = None, None
+    
     try:
         # Initialize and fetch data
         conn, cursor, table_name, content_data, language_data, geospatial_data = initialize_and_fetch_data()
 
+        # Exit if user quits
+        if table_name is None:
+            return
+
+        # Check if content data is available
         if content_data.size == 0:
-            return  # Exit if data is None
+            logging.info("No content data available. Exiting program.")
+            return
 
         # Prompt model selection
         model = prompt_model_selection()
-        if model == 'q':
+        if model == 'quit':
             return  # Exit if user chooses to quit
         
         # Preprocess and store the fetched data
@@ -43,9 +51,8 @@ def main():
     finally:
         # Commit changes and close the connection to the database
         close_connection_to_database(conn, cursor)
-
-    total_time = time.time() - start_time
-    logging.info(f"Total execution time: {total_time // 60} minutes and {total_time % 60:.2f} seconds.")
+        total_time = time.time() - start_time
+        logging.info(f"Total execution time: {total_time // 60} minutes and {total_time % 60:.2f} seconds.")
 
 if __name__ == '__main__':
     main()
