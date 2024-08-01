@@ -4,12 +4,12 @@ from .create_tables import (
     create_vader_sentiment_table,
     create_roberta_sentiment_table,
     create_geospatial_analysis_table,
-    create_processed_content_table,
+    create_preprocessed_content_table,
     create_language_table
 )
 from .insert_data import (
     insert_content_data,
-    insert_processed_content_data,
+    insert_preprocessed_content_data,
     insert_language_data,
     insert_geospatial_data,
     insert_vader_sentiment_data,
@@ -38,7 +38,7 @@ def create_database_tables(cursor, table_name):
     @ret: None.
     """
     create_content_table(cursor, table_name)
-    create_processed_content_table(cursor, table_name)
+    create_preprocessed_content_table(cursor, table_name)
     create_language_table(cursor, table_name)
     create_vader_sentiment_table(cursor, table_name)
     create_roberta_sentiment_table(cursor, table_name)

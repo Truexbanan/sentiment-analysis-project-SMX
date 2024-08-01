@@ -26,8 +26,10 @@ def initialize_and_fetch_data():
     """
     conn, cursor = initialize_database()
     table_name = get_table_name_from_user(cursor)
+    
     if table_name is None:
         return conn, cursor, None, None, None, None
+    
     create_database_tables(cursor, table_name)
     content_data, language_data, geospatial_data = fetch_and_store_table_data(cursor, table_name)
     return conn, cursor, table_name, content_data, language_data, geospatial_data

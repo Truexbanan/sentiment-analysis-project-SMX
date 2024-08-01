@@ -14,11 +14,11 @@ def validate_table_name(cursor, table_name):
     @raises ValueError: If the table name is invalid or does not exist.
     """
     if not re.match(r'^[A-Za-z_][A-Za-z0-9_]*$', table_name):
-        raise ValueError("Invalid table name")
+        raise ValueError("Invalid table name.")
     elif not check_table_exists(cursor, table_name):
-        raise ValueError("Table does not exist")
+        raise ValueError("Table does not exist.")
     else:
-        logging.info(f"Table name '{table_name}' is valid")
+        logging.info(f"Table name '{table_name}' is valid.")
 
 def get_table_name_from_user(cursor):
     """
