@@ -148,12 +148,12 @@ To use the AWS Translate service, you need to configure your AWS credentials. Fo
 After running the program, it will establish a connection to the PostgreSQL database and retrieve the contents of the social media posts. The program will then preprocess the posts, analyze their sentiment, and update the database with the results. Additionally, it will perform geospatial plotting using the coordinates of the posts.
 
 1. **Console Output**:
-   - The user will be prompted to enter the base table name the program will work with, which will undergo verification.
+   - The user will be prompted to enter the base table name the program will work with, which will undergo verification. The user can quit the program by entering `quit`.
    - A sentiment analysis model selector prompt will appear in the terminal. The user can input a value corresponding to their chosen model:
       - `1`: VADER
       - `2`: Hugging Face's RoBERTa
       - Any other key: Run all models
-   - The user can also exit the program by entering `q`.
+   - The user can also exit the program by entering `quit`.
 2. **Database Updates**:
    - **Sentiment Analysis**:
       - If a results table for the selected model does not exist, a new table will be created with the following structure:
@@ -197,7 +197,7 @@ The program is designed to be easily extendable. If you want to add new features
 
 ### Adding New Tables
 
-To add a new table for storing sentiment analysis results for a specific model, follow the pattern used in the create_tables.py file. In the function names, replace 'model' with the sentiment model’s name (e.g., create_vader_sentiment_table for VADER). The approach differs based on whether you’re using processed or raw data.
+To add a new table for storing sentiment analysis results for a specific model, follow the pattern used in the `create_tables.py` file. In the function names, replace 'model' with the sentiment model’s name (e.g., create_vader_sentiment_table for VADER). The approach differs based on whether you’re using processed or raw data.
 
 Using processed data:
 ```python

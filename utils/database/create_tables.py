@@ -15,7 +15,7 @@ def create_content_table(cursor, table_name):
     """
     cursor.execute(create_table_query)
 
-def create_processed_content_table(cursor, table_name):
+def create_preprocessed_content_table(cursor, table_name):
     """
     Create the processed social media post content table if it doesn't exist.
     

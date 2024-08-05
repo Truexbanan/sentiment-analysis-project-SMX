@@ -130,8 +130,8 @@ def process_entry(entry, id_to_index, language_data):
 
     language_name = language_data[int(index), 1]  # Extract the language name
     language_code = language_mapping.get(language_name)  # Get the language code
-    processed_text = preprocess_text(text, language_code)
-    return id_, processed_text
+    preprocessed_text = preprocess_text(text, language_code)
+    return id_, preprocessed_text
 
 def preprocess_data(data, language_data):
     """
@@ -141,8 +141,8 @@ def preprocess_data(data, language_data):
     @param language_data (np.ndarray): A NumPy array of [id, language] pairs.
     @ret (np.ndarray): A NumPy array of unique [id, preprocessed_text] pairs.
     """
-    unique_processed_texts = set()
-    processed_data = []
+    unique_preprocessed_texts = set()
+    preprocessed_data = []
 
     # Convert to NumPy array if not already
     if not isinstance(data, np.ndarray):
@@ -161,14 +161,14 @@ def preprocess_data(data, language_data):
         # Iterate over Future objects as they complete and process the result
         for future in concurrent.futures.as_completed(future_to_entry):
             # Retrieve result of the completed task
-            id_, processed_text = future.result()
+            id_, preprocessed_text = future.result()
 
             # Ensure each processed text is unique before adding it to the result
-            if processed_text not in unique_processed_texts:
-                unique_processed_texts.add(processed_text)
-                preprocess_cache[processed_text] = processed_text
-                processed_data.append([id_, processed_text])
+            if preprocessed_text not in unique_preprocessed_texts:
+                unique_preprocessed_texts.add(preprocessed_text)
+                preprocess_cache[preprocessed_text] = preprocessed_text
+                preprocessed_data.append([id_, preprocessed_text])
             else:
-                processed_data.append([id_, preprocess_cache[processed_text]])
+                preprocessed_data.append([id_, preprocess_cache[preprocessed_text]])
 
-    return np.array(processed_data)
+    return np.array(preprocessed_data)

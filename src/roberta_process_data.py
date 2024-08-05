@@ -14,8 +14,10 @@ def create_dataframe(processed_data):
     """
     Create a Polars DataFrame from processed data.
     
-    @param processed_data: List of processed data.
-    @ret: Polars DataFrame.
+    @param processed_data (list of lists): List of processed data.
+    @ret (pl.DataFrame): Polars DataFrame.
+
+    @raises DataFrameCreationError: If there is an error creating the DataFrame.
     """
     try:
         return pl.DataFrame(processed_data, schema=["id", "text"])
@@ -27,10 +29,10 @@ def adjust_thresholds(logits, neutral_threshold=0.65, slight_threshold=0.4):
     """
     Adjust the thresholds for classification.
 
-    @param logits: Model logits.
-    @param neutral_threshold: Threshold for neutral classification.
-    @param slight_threshold: Threshold for slight classification.
-    @ret: List of adjusted predictions.
+    @param logits (torch.Tensor): Model logits.
+    @param neutral_threshold (float): Threshold for neutral classification.
+    @param slight_threshold (float): Threshold for slight classification.
+    @ret (list of ints): List of adjusted predictions.
     """
     probabilities = torch.nn.functional.softmax(logits, dim=1)
     adjusted_predictions = []
@@ -62,8 +64,10 @@ def roberta_analyze_data(raw_data):
     """
     Analyze data using the RoBERTa model.
     
-    @param raw_data: Raw input data.
-    @ret: List of analysis results.
+    @param raw_data (list of lists): Raw input data.
+    @ret (list of lists): List of analysis results.
+
+    @raises DataFrameCreationError: If there is an error creating the DataFrame.
     """
     try:
         df = create_dataframe(raw_data)

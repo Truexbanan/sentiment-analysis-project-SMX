@@ -14,7 +14,7 @@ def insert_content_data(cursor, data, table_name):
     """
     cursor.executemany(insert_query, data)
 
-def insert_processed_content_data(cursor, data, table_name):
+def insert_preprocessed_content_data(cursor, data, table_name):
     """
     Insert processed content into the specified processed content table.
 

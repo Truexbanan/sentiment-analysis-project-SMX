@@ -1,6 +1,5 @@
 import torch
 from transformers import AutoTokenizer
-import polars as pl
 
 def tokenize_data(text_series):
     """
