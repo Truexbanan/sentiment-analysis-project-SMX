@@ -7,9 +7,10 @@
 4. [Running the Program](#running-the-program)
 5. [Usage](#usage)
 6. [Extending the Project](#extending-the-project)
-7. [Results](#results)
-8. [Authors and Acknowledgment](#authors-and-acknowledgment)
-9. [License](#license)
+7. [Contributions](#contributions)
+8. [Results](#results)
+9. [Authors and Acknowledgment](#authors-and-acknowledgment)
+10. [License](#license)
 
 ## Overview
 
@@ -262,9 +263,34 @@ def insert_model_sentiment_data(cursor, data, table_name):
 To allow for the selection of the newly added model, update `sentiment_pipeline.py` and `pipeline_helpers.py`:
 
    1.	Update `sentiment_pipeline.py`: Modify the pipeline to include the new model choice and integrate its functionality.
-	2.	Update `pipeline_helpers.py`: Extend the perform_selected_sentiment_analysis function to handle the new model choice and execute the appropriate analysis.
+   2.	Update `pipeline_helpers.py`: Extend the perform_selected_sentiment_analysis function to handle the new model choice and execute the appropriate analysis.
 
 By following these steps, you can seamlessly extend the project to include new tables, insert data into them, and integrate additional sentiment analysis models.
+
+## Contributions
+
+Thank you for your interest in contributing to our sentiment analysis tool. We appreciate your efforts in helping us enhance our application.
+
+- **Contributing Opportunities**
+  - **Bug Reporting**: Please report bugs through our GitLab issue tracker.
+  - **Feature Suggestions**: Suggest new features/improvements by creating an issue in our GitLab repository.
+  - **Code Contributions**: Employees and approved partners can contribute code through our GitLab repository.
+- **Guidelines for Contributions**
+  - **Coding Standards**: Maintain modularity, and ensure the code is uniform to the existing code.
+  - **Commit Protocols**: Use clear and concise commit messages.
+  - **Testing Requirements**: Ensure all tests pass before submitting your changes.
+- **Development Environment Setup**
+  - **Clone the repository**:
+  ```
+  git clone https://git.smxtech.us/cwirks/sentiment-analysis-project.git
+  ```
+  - Install dependencies: pip install -r requirements.txt
+- **Pull Request Guidelines**
+  1. Fork the repository and create a new branch for your new feature.
+      a. **Example)** feature/geospatial-analysis
+  2. Make and test your changes.
+  3. Push to your branch and submit a merge request on GitLab.
+  4. Include a detailed description of your changes.
 
 ## Results
 
@@ -276,9 +302,9 @@ Upon analyzing social media posts related to United Kingdom's Prime Minister Ris
   - Neutral: 26.33%
 
 - **VADER Sentiment Analysis:**
-  - Positive: 37.61%
-  - Negative: 40.19%
-  - Neutral: 22.20%
+  - Positive: 37.06%
+  - Negative: 39.66%
+  - Neutral: 23.28%
 
 - **RoBERTa Sentiment Analysis:**
   - Positive: 11.71%

@@ -5,6 +5,7 @@ import logging
 import numpy as np
 import concurrent.futures
 from utils.general.language_codes import language_mapping
+from spacy.matcher import Matcher
 
 def load_spacy_model(model_name):
     """
@@ -91,6 +92,35 @@ def tokenize_text(text, language):
     ]
     # Create list of lemmatized tokens
     return [token.lemma_ for token in doc if (not token.is_stop or token.dep_ == 'neg') and (token.text.lower() not in important_stop_words_for_vader)]
+
+def perform_ner(text):
+    """
+    Perform Named Entity Recognition (NER) on the text and identify specific patterns.
+
+    @param text (str): The text to analyze.
+    @ret (list of tuples): A list of tuples containing named entities and their labels.
+    """
+    doc = nlp(text)
+    
+    # Initialize the Matcher
+    matcher = Matcher(nlp.vocab)
+    
+    # Define pattern to match "minister of justice" in any case
+    pattern = [
+        {"LOWER": "minister"},
+        {"IS_SPACE": True, "OP": "*"},
+        {"LOWER": "of", "OP": "?"},
+        {"IS_SPACE": True, "OP": "*"},
+        {"LOWER": "justice"}
+    ]
+    
+    matcher.add("MinisterOfJustice", [pattern])
+    
+    # Find matches in the doc
+    matches = matcher(doc)
+    named_entities = [(ent.text, ent.label_) for ent in doc.ents]
+    
+    return named_entities
 
 def preprocess_text(text, language):
     """

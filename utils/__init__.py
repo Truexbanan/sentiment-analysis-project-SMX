@@ -17,6 +17,7 @@ from .database import (
     fetch_geospatial_data,
     insert_content_data,
     insert_preprocessed_content_data,
+    insert_language_data,
     insert_geospatial_data,
     insert_vader_sentiment_data,
     insert_roberta_sentiment_data,
@@ -26,5 +27,6 @@ from .database import (
 from .general import (
     validate_table_name,
     get_table_name_from_user,
+    check_table_exists,
     language_mapping
 )
