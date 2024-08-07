@@ -281,10 +281,13 @@ Thank you for your interest in contributing to our sentiment analysis tool. We a
   - **Testing Requirements**: Ensure all tests pass before submitting your changes.
 - **Development Environment Setup**
   - **Clone the repository**:
-  ```
-  git clone https://git.smxtech.us/cwirks/sentiment-analysis-project.git
-  ```
-  - Install dependencies: pip install -r requirements.txt
+      ```
+      git clone https://git.smxtech.us/cwirks/sentiment-analysis-project.git
+      ```
+  - Install dependencies:
+      ```
+      pip install -r requirements.txt
+      ```
 - **Pull Request Guidelines**
   1. Fork the repository and create a new branch for your new feature.
       a. **Example)** feature/geospatial-analysis
