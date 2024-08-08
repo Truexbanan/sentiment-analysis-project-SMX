@@ -6,8 +6,8 @@ def load_json(file_path):
     """
     Load a JSON file from the specified path.
     
-    @param file_path: The path to the JSON file.
-    @ret: The loaded JSON data as a dictionary.
+    @param file_path (str): The path to the JSON file.
+    @ret (dict or None): The loaded JSON data as a dictionary.
     """
     try:
         with open(file_path, "r", encoding="utf-8") as f:
@@ -20,8 +20,8 @@ def save_to_json(new_data, file_path):
     """
     Save the processed data to a JSON file, appending to it if it already exists.
 
-    @param new_data: The new data to save.
-    @param file_path: The path to the JSON file.
+    @param new_data (dict): The new data to save.
+    @param file_path (str): The path to the JSON file. If the file does not exist, it will be created with this name.
     @ret: None.
     """
     try:

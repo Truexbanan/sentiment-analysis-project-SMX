@@ -1,11 +1,11 @@
 from .connection import connect_to_database, close_connection_to_database
 from .create_tables import (
     create_content_table,
+    create_preprocessed_content_table,
+    create_language_table,
     create_vader_sentiment_table,
     create_roberta_sentiment_table,
-    create_geospatial_analysis_table,
-    create_preprocessed_content_table,
-    create_language_table
+    create_geospatial_analysis_table
 )
 from .insert_data import (
     insert_content_data,
