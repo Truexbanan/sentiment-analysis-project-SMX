@@ -1,3 +1,6 @@
+## Additional Documentation
+For more detailed documentation, see [Additional Documentation](https://docs.google.com/document/d/1grqQWrlq_DtEwh_MRwv901WWuvub3wTJ/edit?usp=sharing&ouid=114354401546524962255&rtpof=true&sd=true).
+
 # Sentiment Analysis Project
 
 ## Table of Contents
